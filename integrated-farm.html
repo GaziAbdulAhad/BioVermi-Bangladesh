@@ -1,37 +1,75 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>সমন্বিত খামার — BioVermi Bangladesh</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>সমন্বিত খামার — BioVermi Bangladesh</title>
+  <meta name="description" content="গোবর থেকে বায়োগ্যাস, Digestate ম্যানেজমেন্ট এবং ভার্মিকম্পোস্ট উৎপাদনের সম্পূর্ণ সমন্বিত মডেল ও ব্যবস্থাপনা।">
+  
+  <!-- ফন্ট -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- মেইন CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
-<body data-page="integrated">
+<body data-page="integrated"> <!-- script.js এই এট্রিবিউট দেখে বুঝবে এটি সমন্বিত খামার পেজ -->
+
 <div class="app">
+  
+  <!-- ================= সাইডবার ================= -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="brand-mark">🌿</div>
-      <div class="brand-text"><b>BioVermi BD</b><span>কৃষি প্রযুক্তি প্ল্যাটফর্ম</span></div>
+      <div class="brand-text">
+        <b>BioVermi BD</b>
+        <span>কৃষি প্রযুক্তি প্ল্যাটফর্ম</span>
+      </div>
     </div>
-    <div class="sidebar-scroll"></div>
+    <!-- সাইডবারের মেনু script.js থেকে ডাইনামিকালি লোড হবে -->
+    <div class="sidebar-scroll" id="sidebar-nav">
+      <!-- JS Placeholder -->
+    </div>
   </aside>
+
+  <!-- ================= মূল কন্টেন্ট ================= -->
   <div class="main">
+    
+    <!-- টপবার -->
     <header class="topbar">
-      <button class="icon-btn hamburger" data-sidebar-toggle>☰</button>
+      <button class="icon-btn hamburger" onclick="toggleSidebar()" aria-label="মেনু">☰</button>
+      
       <div class="search-wrap">
         <span class="s-ico">🔍</span>
-        <input id="globalSearch" type="text" placeholder="মডিউল খুঁজুন...">
+        <input type="text" id="globalSearch" placeholder="মডিউল বা বিষয় খুঁজুন..." autocomplete="off">
         <div class="search-results" id="searchResults"></div>
       </div>
+
       <div class="topbar-right">
-        <button class="icon-btn" data-theme-toggle>🌓</button>
-        <div class="avatar">বাং</div>
+        <button class="icon-btn" onclick="toggleTheme()" title="ডার্ক/লাইট মোড" aria-label="থিম পরিবর্তন">🌓</button>
+        <div class="avatar" title="ব্যবহারকারী">বাং</div>
       </div>
     </header>
-    <div class="content" id="page-content"></div>
+
+    <!-- ডাইনামিক কন্টেন্ট এরিয়া -->
+    <main class="content" id="page-content">
+      <!-- 
+        script.js এই জায়গায় ডেটা লোড করবে। 
+        URL-এ ?module=i40 থাকলে মডিউল ৪০ এর বিস্তারিত আসবে। 
+        শুধু integrated-farm.html থাকলে ৪০-৪৫ নম্বর মডিউলের তালিকা আসবে। 
+      -->
+      <div style="text-align: center; padding: 50px; color: var(--muted);">
+        <p>লোড হচ্ছে...</p>
+      </div>
+    </main>
+    
   </div>
 </div>
+
+<!-- গ্লোবাল জাভাস্ক্রিপ্ট ফাইল সমূহ -->
 <script src="data.js"></script>
 <script src="script.js"></script>
+
 </body>
 </html>
