@@ -1,50 +1,83 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>রেফারেন্স — BioVermi Bangladesh</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>রেফারেন্স গ্রন্থাগার — BioVermi Bangladesh</title>
+  <meta name="description" content="বায়োগ্যাস এবং ভার্মিকম্পোস্ট প্রযুক্তির বিশ্বস্ত রেফারেন্স, গবেষণাপত্র ও সরকারি নির্দেশিকার সংগ্রহ।">
+  
+  <!-- ফন্ট -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- মেইন CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
-<body data-page="references">
+<body data-page="references"> <!-- script.js এই পেজে রেফারেন্স লোড করবে -->
+
 <div class="app">
+  
+  <!-- ================= সাইডবার ================= -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="brand-mark">🌿</div>
-      <div class="brand-text"><b>BioVermi BD</b><span>কৃষি প্রযুক্তি প্ল্যাটফর্ম</span></div>
+      <div class="brand-text">
+        <b>BioVermi BD</b>
+        <span>কৃষি প্রযুক্তি প্ল্যাটফর্ম</span>
+      </div>
     </div>
-    <div class="sidebar-scroll"></div>
+    <div class="sidebar-scroll" id="sidebar-nav">
+      <!-- JS Placeholder -->
+    </div>
   </aside>
+
+  <!-- ================= মূল কন্টেন্ট ================= -->
   <div class="main">
+    
+    <!-- টপবার -->
     <header class="topbar">
-      <button class="icon-btn hamburger" data-sidebar-toggle>☰</button>
+      <button class="icon-btn hamburger" onclick="toggleSidebar()" aria-label="মেনু">☰</button>
+      
       <div class="search-wrap">
         <span class="s-ico">🔍</span>
-        <input id="globalSearch" type="text" placeholder="খুঁজুন...">
+        <input type="text" id="globalSearch" placeholder="মডিউল বা বিষয় খুঁজুন..." autocomplete="off">
         <div class="search-results" id="searchResults"></div>
       </div>
+
       <div class="topbar-right">
-        <button class="icon-btn" data-theme-toggle>🌓</button>
-        <div class="avatar">বাং</div>
+        <button class="icon-btn" onclick="toggleTheme()" title="ডার্ক/লাইট মোড" aria-label="থিম পরিবর্তন">🌓</button>
+        <div class="avatar" title="ব্যবহারকারী">বাং</div>
       </div>
     </header>
-    <div class="content">
-      <div class="page-head">
-        <div class="crumb"><a href="index.html">হোম</a> › রেফারেন্স</div>
-        <h1>📚 গবেষণা ও রেফারেন্স গ্রন্থাগার</h1>
-        <p>FAO, USDA, US EPA, OSHA, IEA Bioenergy, BSTI, BARC সহ বিশ্বস্ত উৎসের সংকলন।</p>
+
+    <!-- রেফারেন্স এরিয়া -->
+    <main class="content">
+      
+      <div class="page-head" style="margin-bottom: 24px;">
+        <h1>📚 রেফারেন্স গ্রন্থাগার</h1>
+        <p style="color: var(--text-2);">FAO, USDA, EPA, OSHA সহ বিশ্বস্ত উৎসের সংকলন এবং গবেষণাপত্রের রেফারেন্স।</p>
       </div>
-      <div class="card">
-        <div id="refs-list"></div>
-      </div>
-      <div class="callout warn" style="margin-top:20px">
+
+      <!-- সতর্কতা / নীতি (প্রজেক্ট ফাইলের নির্দেশনা অনুযায়ী) -->
+      <div class="callout warn" style="margin-bottom: 24px;">
         <b>⚠️ উদ্ধৃতির নীতি</b>
         কোনো তথ্য নিশ্চিত না হলে “আরও যাচাই প্রয়োজন” লিখুন — অনুমানকে তথ্য হিসেবে উপস্থাপন করবেন না। বর্তমান আইন বা অনুমোদনের তথ্য দিলে সরকারি উৎস থেকে যাচাই করে তারিখসহ দেখান।
       </div>
-    </div>
+
+      <!-- রেফারেন্সের তালিকা (script.js এটি পূরণ করবে) -->
+      <div class="card" id="refs-list" style="overflow: hidden;">
+        <!-- JS থেকে ডাইনামিক রেফারেন্স আসবে -->
+        <div style="padding: 30px; text-align: center; color: var(--muted);">লোড হচ্ছে...</div>
+      </div>
+
+    </main>
   </div>
 </div>
+
+<!-- গ্লোবাল জাভাস্ক্রিপ্ট ফাইল সমূহ -->
 <script src="data.js"></script>
 <script src="script.js"></script>
+
 </body>
 </html>
