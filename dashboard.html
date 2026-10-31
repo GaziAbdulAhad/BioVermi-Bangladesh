@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ড্যাশবোর্ড — BioVermi Bangladesh</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body data-page="dashboard">
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">🌿</div>
+      <div class="brand-text"><b>BioVermi BD</b><span>কৃষি প্রযুক্তি প্ল্যাটফর্ম</span></div>
+    </div>
+    <div class="sidebar-scroll"></div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn hamburger" data-sidebar-toggle>☰</button>
+      <div class="search-wrap">
+        <span class="s-ico">🔍</span>
+        <input id="globalSearch" type="text" placeholder="খুঁজুন...">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" data-theme-toggle>🌓</button>
+        <div class="avatar">বাং</div>
+      </div>
+    </header>
+    <div class="content" id="dash">
+      <div class="page-head">
+        <div class="crumb"><a href="index.html">হোম</a> › ড্যাশবোর্ড</div>
+        <h1>📊 ফার্ম ড্যাশবোর্ড</h1>
+        <p>এই ড্যাশবোর্ডে দেখানো সব সংখ্যা <b>ডেমো ডেটা</b> হিসেবে চিহ্নিত। বাস্তব ব্যবহারের সময় নিজের খামারের ডেটা দিয়ে প্রতিস্থাপন করুন।</p>
+      </div>
+
+      <div class="grid g4" id="dash-cards"></div>
+
+      <div class="grid g2" style="margin-top:22px">
+        <div class="card card-pad">
+          <h3 style="margin-bottom:14px">📈 গ্যাস উৎপাদন প্রবণতা</h3>
+          <div class="chart-box"><canvas id="chartGas"></canvas></div>
+        </div>
+        <div class="card card-pad">
+          <h3 style="margin-bottom:14px">🌱 বেডভিত্তিক উৎপাদন</h3>
+          <div class="chart-box"><canvas id="chartVermi"></canvas></div>
+        </div>
+      </div>
+
+      <div class="grid g2" style="margin-top:22px">
+        <div class="card card-pad">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <h3>✅ আজকের কাজ</h3>
+            <a class="btn btn-sm btn-ghost" href="calculators.html">ক্যালকুলেটর</a>
+          </div>
+          <div id="dash-tasks"></div>
+        </div>
+        <div class="card card-pad">
+          <h3 style="margin-bottom:12px">🔔 সতর্কতা ও নোটিশ</h3>
+          <div id="dash-alerts"></div>
+        </div>
+      </div>
+
+      <div class="card card-pad" style="margin-top:22px">
+        <h3 style="margin-bottom:12px">💾 ডেটা ব্যাকআপ</h3>
+        <p style="font-size:13.5px;color:var(--text-2);margin-bottom:14px">আপনার সব ডেটা এই ব্রাউজারের LocalStorage-এ সংরক্ষিত। নিয়মিত CSV ব্যাকআপ নিন।</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="exportCSV()">📥 CSV Export</button>
+          <label class="btn btn-ghost" style="cursor:pointer;margin:0">
+            📤 CSV Import
+            <input type="file" accept=".csv" onchange="importCSV(event)" style="display:none">
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
