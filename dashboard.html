@@ -1,83 +1,139 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ড্যাশবোর্ড — BioVermi Bangladesh</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ড্যাশবোর্ড — BioVermi Bangladesh</title>
+  <meta name="description" content="খামারের দৈনিক উৎপাদন, আয়-ব্যয়, স্টক এবং কাজের তালিকা একসাথে পর্যবেক্ষণ করুন।">
+  
+  <!-- ফন্ট -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- মেইন CSS -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Chart.js (গ্রাফ তৈরি করার জন্য) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
-<body data-page="dashboard">
+<body data-page="dashboard"> <!-- script.js এই পেজে initDashboard() রান করবে -->
+
 <div class="app">
+  
+  <!-- ================= সাইডবার ================= -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="brand-mark">🌿</div>
-      <div class="brand-text"><b>BioVermi BD</b><span>কৃষি প্রযুক্তি প্ল্যাটফর্ম</span></div>
+      <div class="brand-text">
+        <b>BioVermi BD</b>
+        <span>কৃষি প্রযুক্তি প্ল্যাটফর্ম</span>
+      </div>
     </div>
-    <div class="sidebar-scroll"></div>
+    <div class="sidebar-scroll" id="sidebar-nav">
+      <!-- JS Placeholder -->
+    </div>
   </aside>
+
+  <!-- ================= মূল কন্টেন্ট ================= -->
   <div class="main">
+    
+    <!-- টপবার -->
     <header class="topbar">
-      <button class="icon-btn hamburger" data-sidebar-toggle>☰</button>
+      <button class="icon-btn hamburger" onclick="toggleSidebar()" aria-label="মেনু">☰</button>
+      
       <div class="search-wrap">
         <span class="s-ico">🔍</span>
-        <input id="globalSearch" type="text" placeholder="খুঁজুন...">
+        <input type="text" id="globalSearch" placeholder="মডিউল বা বিষয় খুঁজুন..." autocomplete="off">
         <div class="search-results" id="searchResults"></div>
       </div>
+
       <div class="topbar-right">
-        <button class="icon-btn" data-theme-toggle>🌓</button>
-        <div class="avatar">বাং</div>
+        <button class="icon-btn" onclick="toggleTheme()" title="ডার্ক/লাইট মোড" aria-label="থিম পরিবর্তন">🌓</button>
+        <div class="avatar" title="ব্যবহারকারী">বাং</div>
       </div>
     </header>
-    <div class="content" id="dash">
-      <div class="page-head">
-        <div class="crumb"><a href="index.html">হোম</a> › ড্যাশবোর্ড</div>
+
+    <!-- ড্যাশবোর্ড এরিয়া -->
+    <main class="content" id="dash">
+      
+      <div class="page-head" style="margin-bottom: 24px;">
         <h1>📊 ফার্ম ড্যাশবোর্ড</h1>
-        <p>এই ড্যাশবোর্ডে দেখানো সব সংখ্যা <b>ডেমো ডেটা</b> হিসেবে চিহ্নিত। বাস্তব ব্যবহারের সময় নিজের খামারের ডেটা দিয়ে প্রতিস্থাপন করুন।</p>
+        <p style="color: var(--text-2);">
+          এখানে আপনার খামারের সব গুরুত্বপূর্ণ তথ্য এক নজরে দেখতে পাবেন। 
+          <span style="background: rgba(192,122,28,.15); color: var(--warn); padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; margin-left: 8px;">Demo Data</span>
+        </p>
       </div>
 
-      <div class="grid g4" id="dash-cards"></div>
-
-      <div class="grid g2" style="margin-top:22px">
-        <div class="card card-pad">
-          <h3 style="margin-bottom:14px">📈 গ্যাস উৎপাদন প্রবণতা</h3>
-          <div class="chart-box"><canvas id="chartGas"></canvas></div>
-        </div>
-        <div class="card card-pad">
-          <h3 style="margin-bottom:14px">🌱 বেডভিত্তিক উৎপাদন</h3>
-          <div class="chart-box"><canvas id="chartVermi"></canvas></div>
-        </div>
+      <!-- ১. স্ট্যাটাস কার্ড এরিয়া (script.js এটি পূরণ করবে) -->
+      <div class="grid g4" id="dash-cards">
+        <!-- JS থেকে ডাইনামিক কার্ড আসবে -->
       </div>
 
-      <div class="grid g2" style="margin-top:22px">
+      <!-- ২. চার্ট এরিয়া -->
+      <div class="grid g2" style="margin-top: 22px;">
         <div class="card card-pad">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <h3>✅ আজকের কাজ</h3>
-            <a class="btn btn-sm btn-ghost" href="calculators.html">ক্যালকুলেটর</a>
+          <h3 style="margin-bottom: 14px; font-size: 1.1rem;">📈 গ্যাস উৎপাদন প্রবণতা (m³)</h3>
+          <div class="chart-box">
+            <canvas id="chartGas"></canvas>
           </div>
-          <div id="dash-tasks"></div>
         </div>
+        
         <div class="card card-pad">
-          <h3 style="margin-bottom:12px">🔔 সতর্কতা ও নোটিশ</h3>
-          <div id="dash-alerts"></div>
+          <h3 style="margin-bottom: 14px; font-size: 1.1rem;">🌱 বেডভিত্তিক ভার্মিকম্পোস্ট (kg)</h3>
+          <div class="chart-box">
+            <canvas id="chartVermi"></canvas>
+          </div>
         </div>
       </div>
 
-      <div class="card card-pad" style="margin-top:22px">
-        <h3 style="margin-bottom:12px">💾 ডেটা ব্যাকআপ</h3>
-        <p style="font-size:13.5px;color:var(--text-2);margin-bottom:14px">আপনার সব ডেটা এই ব্রাউজারের LocalStorage-এ সংরক্ষিত। নিয়মিত CSV ব্যাকআপ নিন।</p>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <!-- ৩. কাজ এবং সতর্কতা এরিয়া -->
+      <div class="grid g2" style="margin-top: 22px;">
+        
+        <!-- দৈনিক কাজের তালিকা -->
+        <div class="card card-pad">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-size: 1.1rem;">✅ আজকের কাজ</h3>
+            <a href="calculators.html" style="font-size: 13px; font-weight: 600; color: var(--leaf-2);">ক্যালকুলেটর</a>
+          </div>
+          <div id="dash-tasks">
+            <!-- JS থেকে টাস্ক লিস্ট আসবে -->
+          </div>
+        </div>
+        
+        <!-- সতর্কতা ও নোটিশ -->
+        <div class="card card-pad">
+          <h3 style="margin-bottom: 12px; font-size: 1.1rem;">🔔 সতর্কতা ও নোটিশ</h3>
+          <div id="dash-alerts">
+            <!-- JS থেকে অ্যালার্ট আসবে -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ৪. ডেটা ব্যাকআপ (CSV Export/Import) -->
+      <div class="card card-pad" style="margin-top: 22px;">
+        <h3 style="margin-bottom: 12px; font-size: 1.1rem;">💾 ডেটা ব্যাকআপ ও রিস্টোর</h3>
+        <p style="font-size: 13.5px; color: var(--text-2); margin-bottom: 14px;">
+          আপনার সব ডেটা এই ব্রাউজারের LocalStorage-এ সংরক্ষিত থাকে। নিরাপত্তার জন্য নিয়মিত CSV ব্যাকআপ ডাউনলোড করে রাখুন।
+        </p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
           <button class="btn btn-primary" onclick="exportCSV()">📥 CSV Export</button>
-          <label class="btn btn-ghost" style="cursor:pointer;margin:0">
+          
+          <label class="btn btn-ghost" style="cursor: pointer; margin: 0;">
             📤 CSV Import
-            <input type="file" accept=".csv" onchange="importCSV(event)" style="display:none">
+            <input type="file" accept=".csv" onchange="importCSV(event)" style="display: none;">
           </label>
         </div>
       </div>
-    </div>
+
+    </main>
   </div>
 </div>
+
+<!-- গ্লোবাল জাভাস্ক্রিপ্ট ফাইল সমূহ -->
 <script src="data.js"></script>
 <script src="script.js"></script>
+
 </body>
 </html>
