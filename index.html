@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BioVermi Bangladesh — সম্পূর্ণ বায়োগ্যাস ও ভার্মিকম্পোস্ট প্ল্যাটফর্ম</title>
+<title>BioVermi Bangladesh — সম্পূর্ণ প্ল্যাটফর্ম</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 /* ============================================================
    BioVermi Bangladesh — Premium Design System (CSS)
@@ -44,146 +45,152 @@ body{
   transition:background .25s ease,color .25s ease;
 }
 h1,h2,h3,h4,h5{font-family:'Hind Siliguri','Inter',sans-serif;line-height:1.35;color:var(--text)}
-h1{font-size:2rem;font-weight:700}
-h2{font-size:1.45rem;font-weight:700}
-h3{font-size:1.15rem;font-weight:600}
-h4{font-size:1rem;font-weight:600}
+h1{font-size:2rem;font-weight:700} h2{font-size:1.45rem;font-weight:700} h3{font-size:1.15rem;font-weight:600} h4{font-size:1rem;font-weight:600}
 a{color:var(--leaf-2);text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
 
-/* ---------- Layout ---------- */
+/* Layout */
 .app{display:flex;min-height:100vh}
 .sidebar{
   width:var(--sidebar-w);flex-shrink:0;background:var(--surface);
   border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;
   display:flex;flex-direction:column;z-index:60;transition:transform .28s ease;
 }
-.sidebar-brand{
-  display:flex;align-items:center;gap:12px;padding:18px 20px;
-  border-bottom:1px solid var(--border);
-}
-.brand-mark{
-  width:42px;height:42px;border-radius:12px;flex-shrink:0;
-  background:linear-gradient(135deg,var(--leaf) 0%,var(--leaf-3) 100%);
-  display:grid;place-items:center;color:#fff;font-size:22px;
-  box-shadow:0 4px 14px rgba(45,106,79,.35);
-}
+.sidebar-brand{display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid var(--border);}
+.brand-mark{width:42px;height:42px;border-radius:12px;flex-shrink:0;background:linear-gradient(135deg,var(--leaf) 0%,var(--leaf-3) 100%);display:grid;place-items:center;color:#fff;font-size:22px;box-shadow:0 4px 14px rgba(45,106,79,.35);}
 .brand-text b{display:block;font-size:1rem;line-height:1.2}
 .brand-text span{font-size:11.5px;color:var(--muted);letter-spacing:.3px}
 .sidebar-scroll{overflow-y:auto;flex:1;padding:12px 10px 20px}
 .sidebar-scroll::-webkit-scrollbar{width:6px}
 .sidebar-scroll::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:4px}
+
 .nav-group{margin-bottom:6px}
-.nav-group-title{
-  font-size:11px;text-transform:uppercase;letter-spacing:1px;
-  color:var(--muted);padding:12px 14px 6px;font-weight:600;
-}
-.nav-item{
-  display:flex;align-items:center;gap:11px;padding:9px 13px;border-radius:10px;
-  color:var(--text-2);font-size:14.2px;font-weight:500;cursor:pointer;
-  transition:.18s; user-select:none;
-}
+.nav-group-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);padding:12px 14px 6px;font-weight:600;}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 13px;border-radius:10px;color:var(--text-2);font-size:14.2px;font-weight:500;cursor:pointer;transition:.18s;user-select:none;}
 .nav-item:hover{background:var(--surface-2);color:var(--leaf-2)}
 .nav-item.active{background:linear-gradient(90deg,rgba(82,183,136,.16),rgba(82,183,136,.04));color:var(--leaf-2);font-weight:600}
 .nav-item .ico{font-size:17px;width:22px;text-align:center;flex-shrink:0}
-.nav-sub{display:block}
 .nav-sub .nav-item{padding:7px 13px 7px 40px;font-size:13.4px;color:var(--muted)}
 
 .main{flex:1;margin-left:var(--sidebar-w);min-width:0;display:flex;flex-direction:column}
-.topbar{
-  height:var(--topbar-h);position:sticky;top:0;z-index:40;
-  background:var(--surface);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:14px;padding:0 22px;
-}
-.icon-btn{
-  width:40px;height:40px;border-radius:11px;border:1px solid var(--border);
-  background:var(--surface);color:var(--text-2);display:grid;place-items:center;
-  cursor:pointer;font-size:16px;transition:.18s;
-}
+.topbar{height:var(--topbar-h);position:sticky;top:0;z-index:40;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:0 22px;}
+.icon-btn{width:40px;height:40px;border-radius:11px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);display:grid;place-items:center;font-size:16px;transition:.18s;}
+.icon-btn:hover{background:var(--surface-2);color:var(--leaf-2);}
 .hamburger{display:none}
 .search-wrap{position:relative;flex:1;max-width:520px}
-.search-wrap input{
-  width:100%;height:42px;border-radius:11px;border:1px solid var(--border);
-  background:var(--surface-2);padding:0 16px 0 42px;font-size:14px;color:var(--text);
-  font-family:inherit;outline:none;transition:.18s;
-}
+.search-wrap input{width:100%;height:42px;border-radius:11px;border:1px solid var(--border);background:var(--surface-2);padding:0 16px 0 42px;font-size:14px;color:var(--text);font-family:inherit;outline:none;transition:.18s;}
+.search-wrap input:focus{border-color:var(--leaf-3);background:var(--surface);box-shadow:0 0 0 4px rgba(82,183,136,.12)}
 .search-wrap .s-ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.avatar{
-  width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--earth),var(--gold));
-  display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;
-}
+.search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);max-height:420px;overflow-y:auto;display:none;z-index:80;}
+.search-results.show{display:block}
+.sr-item{padding:11px 16px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;flex-direction:column;gap:2px;}
+.sr-item:hover{background:var(--surface-2)}
+.sr-item b{font-size:14px;font-weight:600}
+.sr-item span{font-size:12.2px;color:var(--muted)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--earth),var(--gold));display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px;}
 .content{padding:28px 30px 60px;max-width:1240px;width:100%;margin:0 auto}
 
-/* ---------- Cards / Stats ---------- */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+/* UI Elements */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);}
 .card-pad{padding:20px}
 .grid{display:grid;gap:16px}
-.g4{grid-template-columns:repeat(4,1fr)}
-.g3{grid-template-columns:repeat(3,1fr)}
-.g2{grid-template-columns:repeat(2,1fr)}
-.stat{
-  padding:18px 18px 16px;position:relative;overflow:hidden;
-  border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);
-  box-shadow:var(--shadow);transition:.2s;
-}
+.g4{grid-template-columns:repeat(4,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+.stat{padding:18px 18px 16px;position:relative;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);transition:.2s;}
 .stat:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:var(--leaf-3)}
 .stat .s-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .stat .s-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-size:17px;background:rgba(82,183,136,.14);color:var(--leaf-2)}
 .stat.info .s-ico{background:rgba(44,110,145,.15);color:var(--info)}
 .stat.earth .s-ico{background:rgba(176,137,104,.18);color:var(--earth-2)}
+.stat.warn .s-ico{background:rgba(192,122,28,.15);color:var(--warn)}
 .stat .s-label{font-size:12.6px;color:var(--muted);font-weight:500}
 .stat .s-value{font-size:1.55rem;font-weight:700;line-height:1.2;letter-spacing:-.3px}
 .stat .s-sub{font-size:12px;color:var(--muted);margin-top:3px}
+.stat .s-tag{position:absolute;top:14px;right:14px;font-size:10px;letter-spacing:.5px;padding:2px 8px;border-radius:20px;background:var(--surface-2);color:var(--muted);text-transform:uppercase;font-weight:600;}
+.stat .s-tag.demo{background:rgba(192,122,28,.18);color:var(--warn)}
 
-/* ---------- Hero ---------- */
-.hero{
-  position:relative;overflow:hidden;border-radius:var(--radius-lg);
-  padding:44px 40px;margin-bottom:28px;
-  background:linear-gradient(135deg,#1b4332 0%,#2d6a4f 55%,#40916c 100%);
-  color:#fff;box-shadow:var(--shadow-lg);
-}
-.hero .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;background:rgba(255,255,255,.14);padding:5px 14px;border-radius:20px;margin-bottom:16px;font-weight:600}
-.hero h1{color:#fff;font-size:2.2rem;max-width:720px;line-height:1.28;margin-bottom:12px}
-.hero p{color:rgba(255,255,255,.86);max-width:640px;margin-bottom:22px}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  height:42px;padding:0 18px;border-radius:11px;border:1px solid transparent;
-  font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:.18s;
-  text-decoration:none;
-}
-.hero .btn-primary{background:#fff;color:var(--forest);box-shadow:0 6px 20px rgba(0,0,0,.2)}
-.hero .btn-ghost{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 18px;border-radius:11px;font-size:14px;font-weight:600;transition:.18s;text-decoration:none;}
+.btn-primary{background:linear-gradient(135deg,var(--leaf),var(--leaf-3));color:#fff;box-shadow:0 4px 14px rgba(45,106,79,.28)}
+.btn-primary:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--text-2)}
+.btn-ghost:hover{background:var(--surface-2);color:var(--leaf-2);border-color:var(--leaf-3)}
 
-/* ---------- Module cards ---------- */
+.hero{position:relative;overflow:hidden;border-radius:var(--radius-lg);padding:44px 40px;margin-bottom:28px;background:linear-gradient(135deg,#1b4332 0%,#2d6a4f 55%,#40916c 100%);color:#fff;box-shadow:var(--shadow-lg);}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;background:rgba(255,255,255,.14);padding:5px 14px;border-radius:20px;margin-bottom:16px;font-weight:600;}
+.hero h1{color:#fff;font-size:2.2rem;max-width:720px;line-height:1.28;margin-bottom:12px;}
+.hero p{color:rgba(255,255,255,.86);max-width:640px;margin-bottom:22px;}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;}
+.hero .btn-primary{background:#fff;color:var(--forest);}
+.hero .btn-ghost{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff;}
+
 .mod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.mod-card{
-  padding:20px;border-radius:var(--radius);background:var(--surface);
-  border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;
-  transition:.2s;display:flex;flex-direction:column;gap:10px;position:relative;
-}
+.mod-card{padding:20px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer;transition:.2s;display:flex;flex-direction:column;gap:10px;}
 .mod-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--leaf-3)}
-.mod-card .num{
-  width:38px;height:38px;border-radius:10px;background:rgba(82,183,136,.14);
-  color:var(--leaf-2);display:grid;place-items:center;font-weight:700;font-size:14px;
-}
+.mod-card .num{width:38px;height:38px;border-radius:10px;background:rgba(82,183,136,.14);color:var(--leaf-2);display:grid;place-items:center;font-weight:700;font-size:14px;}
 .mod-card h4{font-size:1rem;line-height:1.4}
 .mod-card p{font-size:13px;color:var(--text-2);line-height:1.6;margin:0}
 .mod-card .meta{margin-top:auto;display:flex;gap:12px;font-size:11.8px;color:var(--muted);padding-top:8px;border-top:1px dashed var(--border)}
 
+/* Module View */
+.lesson-layout{display:grid;grid-template-columns:1fr 260px;gap:28px;align-items:start}
+.lesson-toc{position:sticky;top:calc(var(--topbar-h) + 20px);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;font-size:13px;}
+.lesson-toc b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px}
+.lesson-toc a{display:block;padding:6px 8px;border-radius:7px;color:var(--text-2);font-size:12.8px;line-height:1.4;border-left:2px solid transparent;cursor:pointer;}
+.lesson-toc a:hover{background:var(--surface-2);color:var(--leaf-2)}
+.lesson-section{margin-bottom:32px;}
+.lesson-section h2{display:flex;align-items:center;gap:10px;padding-bottom:10px;margin-bottom:14px;border-bottom:2px solid var(--border);font-size:1.3rem;}
+.lesson-section h2::before{content:'';width:6px;height:22px;border-radius:3px;background:linear-gradient(180deg,var(--leaf-3),var(--leaf));}
+.lesson-section p{margin-bottom:12px;color:var(--text-2);font-size:15px}
+.lesson-section ul{margin:10px 0 16px 22px;color:var(--text-2)}
+.lesson-section li{margin-bottom:6px;font-size:14.6px}
+
+.table-wrap{overflow-x:auto;margin:16px 0;border:1px solid var(--border);border-radius:var(--radius-sm)}
+table{width:100%;border-collapse:collapse;font-size:13.6px;background:var(--surface);min-width:520px}
+th,td{padding:10px 13px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--surface-2);font-weight:600;color:var(--text);font-size:12.6px;text-transform:uppercase;}
+tr:last-child td{border-bottom:none}
+
+.callout{border-radius:var(--radius-sm);padding:15px 18px;margin:16px 0;border-left:4px solid var(--info);background:rgba(44,110,145,.08);font-size:14px;}
+.callout.warn{border-color:var(--warn);background:rgba(192,122,28,.09)}
+.callout.danger{border-color:var(--danger);background:rgba(178,58,72,.08)}
+.callout b{display:block;margin-bottom:4px}
+
+/* Forms */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;}
+.input{width:100%;height:44px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);padding:0 14px;font-size:14px;color:var(--text);outline:none;}
+.input:focus{border-color:var(--leaf-3);background:var(--surface);}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.calc-result{background:linear-gradient(135deg,rgba(82,183,136,.12),rgba(45,106,79,.06));border:1px solid rgba(82,183,136,.3);border-radius:var(--radius);padding:20px;margin-top:16px;}
+.res-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--border);font-size:14px}
+.res-row span:last-child{font-weight:700;color:var(--leaf-2)}
+.steps{font-size:12.6px;color:var(--text-2);background:var(--surface);border:1px dashed var(--border);border-radius:10px;padding:12px;margin-top:12px;}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:12px}
+.tab{padding:7px 15px;border-radius:9px;font-size:13.4px;font-weight:600;color:var(--text-2);border:1px solid transparent;}
+.tab.active{background:rgba(82,183,136,.14);color:var(--leaf-2);border-color:rgba(82,183,136,.3)}
+
+/* Dashboard */
+.chart-box{position:relative;height:280px;width:100%}
+.task{display:flex;align-items:center;gap:11px;padding:11px 4px;border-bottom:1px solid var(--border);font-size:14px;}
+.task:last-child{border-bottom:none}
+.task input[type=checkbox]{width:17px;height:17px;accent-color:var(--leaf-2);cursor:pointer;}
+
 @media(max-width:900px){
-  .g4{grid-template-columns:repeat(2,1fr)}
-  .g3{grid-template-columns:1fr}
+  .g4,.g3,.g2,.calc-grid,.lesson-layout{grid-template-columns:1fr}
   .sidebar{transform:translateX(-100%);}
   .sidebar.open{transform:translateX(0)}
   .main{margin-left:0}
   .hamburger{display:grid}
+  .lesson-toc{display:none}
+  .hero{padding:32px 24px}
 }
 </style>
 </head>
 <body>
 
 <div class="app">
+  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="brand-mark">🌿</div>
@@ -193,16 +200,18 @@ a{color:var(--leaf-2);text-decoration:none}
       </div>
     </div>
     <div class="sidebar-scroll" id="sidebar-nav">
-      <!-- Sidebar JS দিয়ে লোড হবে -->
+      <!-- JS Inject -->
     </div>
   </aside>
 
+  <!-- Main Content -->
   <div class="main">
     <header class="topbar">
-      <button class="icon-btn hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <button class="icon-btn hamburger" onclick="toggleSidebar()">☰</button>
       <div class="search-wrap">
         <span class="s-ico">🔍</span>
-        <input id="globalSearch" type="text" placeholder="মডিউল, শব্দ বা বিষয় খুঁজুন...">
+        <input id="globalSearch" type="text" placeholder="মডিউল, শব্দ বা বিষয় খুঁজুন..." autocomplete="off">
+        <div class="search-results" id="searchResults"></div>
       </div>
       <div class="topbar-right">
         <button class="icon-btn" onclick="toggleTheme()">🌓</button>
@@ -210,44 +219,25 @@ a{color:var(--leaf-2);text-decoration:none}
       </div>
     </header>
 
-    <div class="content">
-      <section class="hero">
-        <span class="eyebrow">🌱 শূন্য থেকে কমার্শিয়াল খামার</span>
-        <h1>বায়োগ্যাস ও ভার্মিকম্পোস্ট — সম্পূর্ণ শেখা, ডিজাইন ও খামার ব্যবস্থাপনা</h1>
-        <p>বাংলাদেশের কৃষকের জন্য তৈরি একটি পূর্ণাঙ্গ ডিজিটাল একাডেমি ও ফার্ম ম্যানেজমেন্ট প্ল্যাটফর্ম। ৫৩টি বিস্তারিত মডিউল, বাস্তব ক্যালকুলেটর, ড্যাশবোর্ড ও গবেষণা-রেফারেন্স।</p>
-        <div class="hero-actions">
-          <a href="#" class="btn btn-primary">🔥 বায়োগ্যাস শুরু করুন</a>
-          <a href="#" class="btn btn-ghost">🪱 ভার্মিকম্পোস্ট শুরু করুন</a>
-        </div>
-      </section>
-
-      <div class="grid g4" style="margin-bottom:26px">
-        <div class="stat"><div class="s-top"><div class="s-ico">📚</div></div><div class="s-label">মোট মডিউল</div><div class="s-value">৫৩</div><div class="s-sub">সম্পূর্ণ কনটেন্ট</div></div>
-        <div class="stat info"><div class="s-top"><div class="s-ico">🧮</div></div><div class="s-label">ক্যালকুলেটর</div><div class="s-value">৮</div><div class="s-sub">বাস্তব হিসাব</div></div>
-        <div class="stat earth"><div class="s-top"><div class="s-ico">📖</div></div><div class="s-label">শব্দকোষ</div><div class="s-value">৪০+</div><div class="s-sub">টেকনিক্যাল টার্ম</div></div>
-        <div class="stat"><div class="s-top"><div class="s-ico">📊</div></div><div class="s-label">আপনার প্রগ্রেস</div><div class="s-value">০ / ৫৩</div></div>
-      </div>
-
-      <h2 style="margin:8px 0 16px">⭐ গুরুত্বপূর্ণ মডিউল</h2>
-      <div class="mod-grid" id="featured-mods">
-        <!-- JS দিয়ে লোড হবে -->
-      </div>
+    <div class="content" id="app-content">
+      <!-- Dynamic Content Rendered Here -->
     </div>
   </div>
 </div>
 
 <script>
 /* ============================================================
-   ডেমো ডাটা (Data.js থেকে নেওয়া কিছু অংশ)
+   1. Data (Modules & Glossary)
    ============================================================ */
 const MODULES = [
-  { id:'b1', num:1, title:'বায়োগ্যাসের মৌলিক ধারণা', read:18, summary:'বায়োগ্যাস কী, কেন তৈরি হয়, গঠন, ব্যবহার, সুবিধা-সীমাবদ্ধতা — শূন্য থেকে বিস্তারিত।' },
-  { id:'b3', num:3, title:'গোবর সংগ্রহ ও প্রস্তুতি', read:16, summary:'গোবর সংগ্রহ থেকে স্লারি প্রস্তুতি পর্যন্ত ধাপে ধাপে ব্যবহারিক নির্দেশনা ও ক্যালকুলেটর।' },
-  { id:'b12', num:12, title:'Digestate ও স্লারি ব্যবস্থাপনা', read:26, summary:'Digestate কী, Solid-Liquid Separation, পুষ্টি উপাদান, নিরাপত্তা ও ব্যবহার।' },
-  { id:'v17', num:17, title:'ভার্মিকম্পোস্টের মৌলিক ধারণা', read:16, summary:'কেঁচো ও অণুজীবের সহযোগিতায় জৈব সার তৈরির বিজ্ঞান।' },
-  { id:'v26', num:26, title:'Biogas Digestate → Vermicompost সমন্বয়', read:34, summary:'পুরো মডেলের কেন্দ্রীয় অধ্যায় — Digestate পরীক্ষা, প্রস্তুতি, পরীক্ষামূলক বেড ডিজাইন।' },
-  { id:'i40', num:40, title:'সমন্বিত উৎপাদন প্রবাহ', read:24, summary:'গোবর থেকে চূড়ান্ত পণ্য পর্যন্ত পুরো প্রবাহ, Flow Balance ও নিয়ন্ত্রণ।' }
+  { id:'b1', part:'biogas', num:1, icon:'🔥', title:'বায়োগ্যাসের মৌলিক ধারণা', read:18, summary:'বায়োগ্যাস কী, কেন তৈরি হয়, গঠন, ব্যবহার, সুবিধা-সীমাবদ্ধতা — শূন্য থেকে বিস্তারিত।', sections:[ {h:'বায়োগ্যাস কী?', p:['বায়োগ্যাস হলো জৈব পদার্থের অবায়বীয় (অক্সিজেনের অনুপস্থিতিতে) পচনের ফলে উৎপন্ন দাহ্য গ্যাসের মিশ্রণ।','এটি অণুজীবের জৈব-রাসায়নিক কার্যক্রমের ফল।']} ] },
+  { id:'b3', part:'biogas', num:3, icon:'🐄', title:'গোবর সংগ্রহ ও প্রস্তুতি', read:16, summary:'গোবর সংগ্রহ থেকে স্লারি প্রস্তুতি পর্যন্ত ধাপে ধাপে ব্যবহারিক নির্দেশনা ও ক্যালকুলেটর।', sections:[ {h:'সংগ্রহের পদ্ধতি', p:['প্রতিদিন নির্দিষ্ট সময়ে গোবর সংগ্রহ করুন।'], list:['তাজা গোবর ব্যবহার করুন','পানি মিশিয়ে স্লারি তৈরি করুন']} ] },
+  { id:'b12', part:'biogas', num:12, icon:'💧', title:'Digestate ও স্লারি ব্যবস্থাপনা', read:26, summary:'Digestate কী, Solid-Liquid Separation, পুষ্টি উপাদান, নিরাপত্তা ও ব্যবহার।', sections:[ {h:'Digestate কী', p:['গ্যাস উৎপাদনের পর অবশিষ্ট তরল-কঠিন মিশ্রণকে Digestate বলে।']} ] },
+  { id:'v17', part:'vermicompost', num:17, icon:'🪱', title:'ভার্মিকম্পোস্টের মৌলিক ধারণা', read:16, summary:'কেঁচো ও অণুজীবের সহযোগিতায় জৈব সার তৈরির বিজ্ঞান।', sections:[ {h:'Vermicompost কী', p:['কেঁচোর পরিপাকতন্ত্রের মাধ্যমে জৈব পদার্থ প্রক্রিয়াজাত হয়ে তৈরি হওয়া জৈব সার।']} ] },
+  { id:'v26', part:'vermicompost', num:26, icon:'⭐', title:'Biogas Digestate → Vermicompost সমন্বয়', read:34, summary:'পুরো মডেলের কেন্দ্রীয় অধ্যায় — Digestate পরীক্ষা, প্রস্তুতি, পরীক্ষামূলক বেড ডিজাইন।', sections:[ {h:'কেন গুরুত্বপূর্ণ', p:['Digestate সরাসরি কেঁচোর বেডে দেওয়া যাবে না। pH, EC, অ্যামোনিয়া পরীক্ষা করতে হবে।']} ] },
+  { id:'i40', part:'integrated', num:40, icon:'🔄', title:'সমন্বিত উৎপাদন প্রবাহ', read:24, summary:'গোবর থেকে চূড়ান্ত পণ্য পর্যন্ত পুরো প্রবাহ, Flow Balance ও নিয়ন্ত্রণ।', sections:[ {h:'প্রবাহ', p:['Cow Dung → Biogas → Digestate → Vermicompost']} ] }
 ];
+// ডেমো হিসেবে ৬টি মডিউল রাখা হলো, কোড সংক্ষিপ্ত রাখার জন্য। চাইলে আরও ডাটা এখানে যোগ করা যাবে।
 
 const PARTS = {
   biogas:{label:'বায়োগ্যাস উৎপাদন', icon:'🔥'},
@@ -256,27 +246,45 @@ const PARTS = {
 };
 
 /* ============================================================
-   ফাংশন সমূহ (script.js থেকে নেওয়া)
+   2. Core Utilities & State
    ============================================================ */
-
-// থিম টগল
 function toggleTheme(){
   const cur = document.documentElement.getAttribute('data-theme') || 'light';
-  const next = cur === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
+  document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+}
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+}
+function navigate(hash) {
+  window.location.hash = hash;
+}
+function getRoute() {
+  return window.location.hash.slice(1) || '/';
 }
 
-// সাইডবার তৈরি
+/* ============================================================
+   3. Render Functions
+   ============================================================ */
+
+// Sidebar
 function buildSidebar(){
-  let html = '';
+  let html = `
+    <div class="nav-group">
+      <div class="nav-item" onclick="navigate('/')"><span class="ico">🏠</span> হোম</div>
+      <div class="nav-item" onclick="navigate('/dashboard')"><span class="ico">📊</span> ড্যাশবোর্ড</div>
+      <div class="nav-item" onclick="navigate('/calculators')"><span class="ico">🧮</span> ক্যালকুলেটর</div>
+    </div>
+  `;
   for(const key in PARTS){
+    const mods = MODULES.filter(m=>m.part===key);
+    if(mods.length === 0) continue;
     html += `<div class="nav-group">
       <div class="nav-group-title">${PARTS[key].label}</div>
       <div class="nav-sub">
-        ${MODULES.filter(m=>m.id.startsWith(key[0])).map(m=>`
-          <div class="nav-item">
-            <span class="ico" style="font-size:14px">${m.num}.</span>
-            <span style="flex:1">${m.title}</span>
+        ${mods.map(m=>`
+          <div class="nav-item" onclick="navigate('/module/${m.id}')">
+            <span class="ico" style="font-size:13px">${m.num}.</span>
+            <span style="flex:1;line-height:1.3;font-size:13px">${m.title}</span>
           </div>
         `).join('')}
       </div>
@@ -285,24 +293,292 @@ function buildSidebar(){
   document.getElementById('sidebar-nav').innerHTML = html;
 }
 
-// ফিচারড মডিউল লোড
-function loadFeatured(){
-  const box = document.getElementById('featured-mods');
-  if(!box) return;
-  box.innerHTML = MODULES.slice(0, 6).map(m=>`
-    <div class="mod-card">
-      <div class="num">${m.num}</div>
-      <h4>${m.title}</h4>
-      <p>${m.summary}</p>
-      <div class="meta"><span>📖 ${m.read} মিনিট</span></div>
+// Home Page
+function renderHome(){
+  const content = document.getElementById('app-content');
+  content.innerHTML = `
+    <section class="hero">
+      <span class="eyebrow">🌱 শূন্য থেকে কমার্শিয়াল খামার</span>
+      <h1>বায়োগ্যাস ও ভার্মিকম্পোস্ট — সম্পূর্ণ শেখা, ডিজাইন ও খামার ব্যবস্থাপনা</h1>
+      <p>বাংলাদেশের কৃষকের জন্য তৈরি একটি পূর্ণাঙ্গ ডিজিটাল একাডেমি ও ফার্ম ম্যানেজমেন্ট প্ল্যাটফর্ম। বিস্তারিত মডিউল, বাস্তব ক্যালকুলেটর, ড্যাশবোর্ড ও গবেষণা-রেফারেন্স।</p>
+      <div class="hero-actions">
+        <button onclick="navigate('/module/b1')" class="btn btn-primary">🔥 বায়োগ্যাস শুরু করুন</button>
+        <button onclick="navigate('/module/v17')" class="btn btn-ghost">🪱 ভার্মিকম্পোস্ট শুরু করুন</button>
+      </div>
+    </section>
+
+    <div class="grid g4" style="margin-bottom:26px">
+      <div class="stat"><div class="s-top"><div class="s-ico">📚</div></div><div class="s-label">মোট মডিউল</div><div class="s-value">৫৩</div></div>
+      <div class="stat info"><div class="s-top"><div class="s-ico">🧮</div></div><div class="s-label">ক্যালকুলেটর</div><div class="s-value">৮</div></div>
+      <div class="stat earth"><div class="s-top"><div class="s-ico">📖</div></div><div class="s-label">শব্দকোষ</div><div class="s-value">৪০+</div></div>
+      <div class="stat"><div class="s-top"><div class="s-ico">📊</div></div><div class="s-label">প্রগ্রেস</div><div class="s-value">০ / ৫৩</div></div>
     </div>
-  `).join('');
+
+    <h2 style="margin:8px 0 16px">⭐ গুরুত্বপূর্ণ মডিউল</h2>
+    <div class="mod-grid">
+      ${MODULES.map(m=>`
+        <div class="mod-card" onclick="navigate('/module/${m.id}')">
+          <div class="num">${m.num}</div>
+          <h4>${m.title}</h4>
+          <p>${m.summary}</p>
+          <div class="meta"><span>📖 ${m.read} মিনিট</span></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
 }
 
-// পেজ লোড হলে সব রান করবে
+// Module View
+function renderModule(id){
+  const m = MODULES.find(x => x.id === id);
+  const content = document.getElementById('app-content');
+  
+  if(!m) {
+    content.innerHTML = `<div class="empty" style="text-align:center;padding:50px"><h2>মডিউলটি পাওয়া যায়নি</h2><button class="btn btn-primary" onclick="navigate('/')" style="margin-top:20px">হোমে ফিরুন</button></div>`;
+    return;
+  }
+
+  content.innerHTML = `
+    <div class="lesson-layout">
+      <div class="lesson-main">
+        <div style="margin-bottom:20px">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:8px">
+            <span style="cursor:pointer" onclick="navigate('/')">হোম</span> › মডিউল ${m.num}
+          </div>
+          <h1>${m.icon} ${m.title}</h1>
+          <div style="display:flex;gap:16px;font-size:13px;color:var(--muted);margin-top:10px">
+            <span>📖 পাঠের সময়: ~${m.read} মিনিট</span>
+            <span>🔢 মডিউল ${m.num}</span>
+          </div>
+        </div>
+
+        <div class="callout" style="background:rgba(82,183,136,.1);border-color:var(--leaf-3)">
+          <b>🎯 শিক্ষার লক্ষ্য</b>
+          এই মডিউলটি সম্পূর্ণ পড়ার পর আপনি বিষয়টির মৌলিক ও ব্যবহারিক দিক সম্পর্কে স্পষ্ট ধারণা পাবেন।
+        </div>
+
+        ${m.sections.map((s, i)=>`
+          <section class="lesson-section" id="sec-${i}">
+            <h2>${s.h}</h2>
+            ${(s.p||[]).map(p=>`<p>${p}</p>`).join('')}
+            ${s.list ? `<ul>${s.list.map(li=>`<li>${li}</li>`).join('')}</ul>` : ''}
+            ${s.table ? `
+              <div class="table-wrap"><table>
+                <thead><tr>${s.table.head.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+                <tbody>${s.table.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+              </table></div>
+            ` : ''}
+          </section>
+        `).join('')}
+
+        <div style="display:flex;justify-content:space-between;margin-top:40px;padding-top:20px;border-top:1px solid var(--border)">
+          <button class="btn btn-ghost" onclick="navigate('/')">← হোমে ফিরুন</button>
+          <button class="btn btn-primary" onclick="alert('পাঠ সম্পন্ন হিসেবে চিহ্নিত হয়েছে!')">✅ সম্পন্ন করুন</button>
+        </div>
+      </div>
+
+      <aside class="lesson-toc">
+        <b>এই পাঠে</b>
+        ${m.sections.map((s,i)=>`<a onclick="document.getElementById('sec-${i}').scrollIntoView({behavior:'smooth'})">${s.h}</a>`).join('')}
+      </aside>
+    </div>
+  `;
+  window.scrollTo(0,0);
+}
+
+// Calculators View
+function renderCalculators() {
+  const content = document.getElementById('app-content');
+  content.innerHTML = `
+    <div style="margin-bottom:22px">
+      <h1>🧮 ক্যালকুলেটর</h1>
+      <p style="color:var(--text-2)">প্রয়োজনীয় তথ্য দিন এবং তাৎক্ষণিক ফলাফল পান।</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchCalc('slurry', this)">🐄 স্লারি ক্যালকুলেটর</button>
+      <button class="tab" onclick="switchCalc('sizing', this)">📐 প্ল্যান্ট সাইজিং</button>
+    </div>
+
+    <div id="calc-slurry" class="calc-panel">
+      <div class="card card-pad">
+        <h3>🐄 গোবর → স্লারি প্রস্তুতি</h3>
+        <div class="calc-grid" style="margin-top:16px">
+          <div class="field"><label>দৈনিক গোবর (kg)</label><input id="sd-dung" class="input" type="number" value="100"></div>
+          <div class="field"><label>গোবরের আর্দ্রতা (%)</label><input id="sd-mc" class="input" type="number" value="80"></div>
+          <div class="field"><label>লক্ষ্য Total Solids (%)</label><input id="sd-ts" class="input" type="number" value="10"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcSlurry()" style="margin-top:10px">হিসাব করুন</button>
+        <div id="sd-result" class="calc-result" style="display:none"></div>
+      </div>
+    </div>
+
+    <div id="calc-sizing" class="calc-panel" style="display:none">
+      <div class="card card-pad">
+        <h3>📐 প্ল্যান্ট সাইজিং</h3>
+        <div class="calc-grid" style="margin-top:16px">
+          <div class="field"><label>দৈনিক Slurry (m³)</label><input id="bs-slurry" class="input" type="number" value="1.2"></div>
+          <div class="field"><label>HRT (দিন)</label><input id="bs-hrt" class="input" type="number" value="30"></div>
+          <div class="field"><label>গ্যাস উৎপাদন (m³/m³ slurry)</label><input id="bs-yield" class="input" type="number" value="0.9"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcSizing()" style="margin-top:10px">হিসাব করুন</button>
+        <div id="bs-result" class="calc-result" style="display:none"></div>
+      </div>
+    </div>
+  `;
+}
+
+function switchCalc(id, btn) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.calc-panel').forEach(p=>p.style.display = 'none');
+  document.getElementById('calc-'+id).style.display = 'block';
+}
+
+function calcSlurry() {
+  const dung = parseFloat(document.getElementById('sd-dung').value) || 0;
+  const mc = parseFloat(document.getElementById('sd-mc').value) || 0;
+  const tts = parseFloat(document.getElementById('sd-ts').value) || 0;
+  if(tts === 0) return;
+
+  const currentTS = dung * (1 - mc/100);
+  const targetTS = currentTS / (tts/100);
+  const water = Math.max(0, targetTS - dung);
+  const totalSlurry = dung + water;
+
+  const res = document.getElementById('sd-result');
+  res.style.display = 'block';
+  res.innerHTML = `
+    <h4>ফলাফল</h4>
+    <div class="res-row"><span>প্রয়োজনীয় পানি</span><span>${water.toFixed(2)} লিটার</span></div>
+    <div class="res-row"><span>মোট Slurry</span><span>${totalSlurry.toFixed(2)} kg</span></div>
+  `;
+}
+
+function calcSizing() {
+  const slurry = parseFloat(document.getElementById('bs-slurry').value) || 0;
+  const hrt = parseFloat(document.getElementById('bs-hrt').value) || 0;
+  const yieldGas = parseFloat(document.getElementById('bs-yield').value) || 0;
+  
+  const digester = slurry * hrt;
+  const gasDaily = slurry * yieldGas;
+
+  const res = document.getElementById('bs-result');
+  res.style.display = 'block';
+  res.innerHTML = `
+    <h4>ফলাফল</h4>
+    <div class="res-row"><span>Digester Volume</span><span>${digester.toFixed(2)} m³</span></div>
+    <div class="res-row"><span>Daily Gas Production</span><span>${gasDaily.toFixed(2)} m³/day</span></div>
+  `;
+}
+
+// Dashboard View
+function renderDashboard() {
+  const content = document.getElementById('app-content');
+  content.innerHTML = `
+    <div style="margin-bottom:22px">
+      <h1>📊 ফার্ম ড্যাশবোর্ড</h1>
+      <p style="color:var(--text-2)">নিচের সব ডেটা ডেমো। বাস্তব ব্যবহারে নিজের ডেটা দিন।</p>
+    </div>
+
+    <div class="grid g4" style="margin-bottom:20px">
+      <div class="stat"><span class="s-tag demo">Demo</span><div class="s-label">মোট গ্যাস</div><div class="s-value">380 m³</div></div>
+      <div class="stat info"><span class="s-tag demo">Demo</span><div class="s-label">দৈনিক ইনপুট</div><div class="s-value">120 kg</div></div>
+      <div class="stat earth"><span class="s-tag demo">Demo</span><div class="s-label">সক্রিয় বেড</div><div class="s-value">6</div></div>
+      <div class="stat warn"><span class="s-tag demo">Demo</span><div class="s-label">মাসিক আয়</div><div class="s-value">৳ 22,000</div></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card card-pad">
+        <h3 style="margin-bottom:14px">📈 গ্যাস উৎপাদন প্রবণতা</h3>
+        <div class="chart-box"><canvas id="chartGas"></canvas></div>
+      </div>
+      <div class="card card-pad">
+        <h3 style="margin-bottom:14px">✅ আজকের কাজ</h3>
+        <div class="task"><input type="checkbox"> <span>গোবর সংগ্রহ ও ডাইজেস্টারে দেওয়া</span></div>
+        <div class="task"><input type="checkbox"> <span>Gas pressure পরীক্ষা</span></div>
+        <div class="task"><input type="checkbox" checked> <span>ভার্মিকম্পোস্ট প্যাকেজিং</span></div>
+      </div>
+    </div>
+  `;
+
+  // Chart Render
+  setTimeout(() => {
+    const ctx = document.getElementById('chartGas');
+    if(ctx && window.Chart) {
+      new Chart(ctx, {
+        type:'line',
+        data:{
+          labels:['সপ্তাহ ১','সপ্তাহ ২','সপ্তাহ ৩','সপ্তাহ ৪'],
+          datasets:[{label:'গ্যাস (m³)', data:[24,28,26,31], borderColor:'#40916c', backgroundColor:'rgba(64,145,108,.15)', fill:true, tension:.4}]
+        },
+        options:{responsive:true,maintainAspectRatio:false}
+      });
+    }
+  }, 100);
+}
+
+/* ============================================================
+   4. Router & Initialization
+   ============================================================ */
+function router() {
+  const route = getRoute();
+  document.getElementById('sidebar').classList.remove('open'); // Close mobile menu on nav
+
+  if (route === '/' || route === '') {
+    renderHome();
+  } else if (route.startsWith('/module/')) {
+    const id = route.split('/')[2];
+    renderModule(id);
+  } else if (route === '/calculators') {
+    renderCalculators();
+  } else if (route === '/dashboard') {
+    renderDashboard();
+  } else {
+    document.getElementById('app-content').innerHTML = '<h2>404 - পেজটি পাওয়া যায়নি</h2>';
+  }
+}
+
+// Search Logic
+function initSearch() {
+  const input = document.getElementById('globalSearch');
+  const results = document.getElementById('searchResults');
+
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase().trim();
+    if (q.length < 2) {
+      results.classList.remove('show');
+      return;
+    }
+
+    const matches = MODULES.filter(m => m.title.toLowerCase().includes(q) || m.summary.toLowerCase().includes(q));
+    
+    if (matches.length === 0) {
+      results.innerHTML = '<div class="sr-item"><span>কোনো ফলাফল নেই</span></div>';
+    } else {
+      results.innerHTML = matches.map(m => `
+        <div class="sr-item" onclick="navigate('/module/${m.id}'); document.getElementById('globalSearch').value=''; results.classList.remove('show');">
+          <b>${m.num}. ${m.title}</b>
+        </div>
+      `).join('');
+    }
+    results.classList.add('show');
+  });
+
+  // Hide search on click outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-wrap')) {
+      results.classList.remove('show');
+    }
+  });
+}
+
+// Start App
 document.addEventListener('DOMContentLoaded', () => {
   buildSidebar();
-  loadFeatured();
+  initSearch();
+  window.addEventListener('hashchange', router);
+  router(); // Initial load
 });
 </script>
 </body>
