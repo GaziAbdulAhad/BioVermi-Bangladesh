@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>শব্দকোষ — BioVermi Bangladesh</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="glossary">
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">🌿</div>
+      <div class="brand-text"><b>BioVermi BD</b><span>কৃষি প্রযুক্তি প্ল্যাটফর্ম</span></div>
+    </div>
+    <div class="sidebar-scroll"></div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn hamburger" data-sidebar-toggle>☰</button>
+      <div class="search-wrap">
+        <span class="s-ico">🔍</span>
+        <input id="globalSearch" type="text" placeholder="খুঁজুন...">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" data-theme-toggle>🌓</button>
+        <div class="avatar">বাং</div>
+      </div>
+    </header>
+    <div class="content">
+      <div class="page-head">
+        <div class="crumb"><a href="index.html">হোম</a> › শব্দকোষ</div>
+        <h1>📖 শব্দকোষ</h1>
+        <p>গুরুত্বপূর্ণ টেকনিক্যাল টার্মের বাংলা-ইংরেজি ব্যাখ্যা।</p>
+      </div>
+      <div class="field" style="max-width:480px">
+        <input id="gloss-search" class="input" type="text" placeholder="শব্দ খুঁজুন...">
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div id="gloss-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
