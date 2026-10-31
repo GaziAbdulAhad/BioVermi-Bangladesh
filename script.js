@@ -1,5 +1,5 @@
 /* ============================================================
-   BioVermi Bangladesh — Core Application
+   BioVermi Bangladesh — Core Application (Updated for new data.js)
    ============================================================ */
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -68,12 +68,13 @@ function buildSidebar(){
   let html = '';
   for(const key in parts){
     const mods = MODULES.filter(m=>m.part===key);
+    if(mods.length === 0) continue;
     html += `<div class="nav-group">
       <div class="nav-group-title">${parts[key].label}</div>
       <div class="nav-sub open">
         ${mods.map(m=>`<div class="nav-item" data-mid="${m.id}" onclick="location.href='${pageForPart(key)}?module=${m.id}'">
-          <span class="ico" style="font-size:14px">${m.num}.</span>
-          <span style="flex:1">${m.title}</span>
+          <span class="ico" style="font-size:13px">${m.num}.</span>
+          <span style="flex:1; line-height:1.3; font-size:13.5px">${m.title}</span>
         </div>`).join('')}
       </div>
     </div>`;
@@ -94,8 +95,8 @@ function pageForPart(part){
   if(part==='biogas') return 'biogas.html';
   if(part==='vermicompost') return 'vermicompost.html';
   if(part==='integrated') return 'integrated-farm.html';
-  if(part==='business') return 'biogas.html';
-  return 'index.html';
+  if(part==='business') return 'integrated-farm.html'; // Business mapped to integrated
+  return 'glossary.html'; // Learning mapped to glossary
 }
 
 /* ---------- Mobile sidebar ---------- */
@@ -113,16 +114,18 @@ function initSearch(){
     if(q.length < 2){ results.classList.remove('show'); results.innerHTML=''; return; }
     const matches = MODULES.filter(m =>
       m.title.toLowerCase().includes(q) ||
-      m.en.toLowerCase().includes(q) ||
-      (m.summary||'').toLowerCase().includes(q)
+      (m.en && m.en.toLowerCase().includes(q)) ||
+      (m.summary && m.summary.toLowerCase().includes(q)) ||
+      (m.terms && m.terms.some(t=> t.en.toLowerCase().includes(q) || t.bn.includes(q)))
     ).slice(0, 12);
+    
     if(!matches.length){
       results.innerHTML = '<div class="sr-item"><span>কোনো ফলাফল পাওয়া যায়নি</span></div>';
     } else {
       results.innerHTML = matches.map(m=>`
         <div class="sr-item" onclick="location.href='${pageForPart(m.part)}?module=${m.id}'">
           <b>${m.num}. ${m.title}</b>
-          <span>${m.en}</span>
+          <span>${m.en || ''}</span>
         </div>`).join('');
     }
     results.classList.add('show');
@@ -142,7 +145,7 @@ function renderModuleList(part, container){
       ${p[m.id] ? '<span class="done-badge">✓ সম্পন্ন</span>' : ''}
       <h4>${m.title}</h4>
       <p>${m.summary||''}</p>
-      <div class="meta"><span>📖 ${m.read} মিনিট</span><span>${m.icon||''} ${m.en}</span></div>
+      <div class="meta"><span>📖 ${m.read} মিনিট</span><span>${m.icon||''} ${m.en||''}</span></div>
     </div>`).join('')}</div>`;
 }
 
@@ -160,6 +163,7 @@ function renderModule(id, container){
   const prev = idx > 0 ? samePart[idx-1] : null;
   const next = idx < samePart.length-1 ? samePart[idx+1] : null;
 
+  // ১. সেকশন রেন্ডার
   const sections = m.sections.map((s, i)=>`
     <section class="lesson-section" id="sec-${i+1}">
       <h2>${s.h}</h2>
@@ -169,6 +173,7 @@ function renderModule(id, container){
       ${s.callout ? `<div class="callout ${s.callout.type||''}"><b>${s.callout.title}</b>${s.callout.body}</div>` : ''}
     </section>`).join('');
 
+  // ২. টার্ম রেন্ডার
   const terms = m.terms && m.terms.length ? `
     <section class="lesson-section" id="terms">
       <h2>মূল টার্ম</h2>
@@ -178,13 +183,21 @@ function renderModule(id, container){
       </table></div>
     </section>` : '';
 
+  // ৩. অবজেক্টিভস (শিক্ষার লক্ষ্য) রেন্ডার
+  const objectives = m.objectives && m.objectives.length ? `
+    <div class="objectives">
+      <h3>🎯 শিক্ষার লক্ষ্য</h3>
+      <ul>${m.objectives.map(o=>`<li>${o}</li>`).join('')}</ul>
+    </div>` : '';
+
+  // ৪. মেইন HTML রেন্ডার
   container.innerHTML = `
     <div class="lesson-layout">
       <div class="lesson-main">
         <div class="page-head">
           <div class="crumb"><a href="index.html">হোম</a> › <a href="${pageForPart(m.part)}">${partLabel(m.part)}</a> › মডিউল ${m.num}</div>
           <h1>${m.icon||''} ${m.title}</h1>
-          <p>${m.en}</p>
+          <p style="color:var(--muted); font-size:14px; margin-top:4px;">${m.en||''}</p>
         </div>
 
         <div class="lesson-meta">
@@ -193,10 +206,7 @@ function renderModule(id, container){
           <span>${isDone ? '✅ সম্পন্ন' : '⏳ অসম্পন্ন'}</span>
         </div>
 
-        <div class="objectives">
-          <h3>🎯 শিক্ষার লক্ষ্য</h3>
-          <ul>${(m.objectives||[]).map(o=>`<li>${o}</li>`).join('')}</ul>
-        </div>
+        ${objectives}
 
         ${sections}
 
@@ -204,7 +214,7 @@ function renderModule(id, container){
 
         ${m.safety ? `<div class="callout ${m.safety.includes('কখনো')||m.safety.includes('বিপদ')?'danger':'warn'}"><b>⚠️ নিরাপত্তা সতর্কতা</b>${m.safety}</div>` : ''}
 
-        ${m.refs ? `<section class="lesson-section"><h2>রেফারেন্স</h2><ul class="refs">${m.refs.map(r=>`<li>${r}</li>`).join('')}</ul></section>` : ''}
+        ${m.refs && m.refs.length ? `<section class="lesson-section"><h2>রেফারেন্স</h2><ul class="refs">${m.refs.map(r=>`<li>${r}</li>`).join('')}</ul></section>` : ''}
 
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
           <button class="btn ${isDone?'btn-ghost':'btn-primary'}" onclick="handleComplete('${m.id}')">${isDone?'↺ সম্পন্নতা সরান':'✅ পাঠ সম্পন্ন হিসেবে চিহ্নিত করুন'}</button>
@@ -229,7 +239,7 @@ function renderModule(id, container){
       </aside>
     </div>`;
 
-  // scroll spy
+  // Scroll spy
   const tocLinks = $$('.lesson-toc a');
   const secs = $$('.lesson-section');
   window.addEventListener('scroll', ()=>{
@@ -523,7 +533,7 @@ function initDashboard(){
 
   // Alerts
   document.getElementById('dash-alerts').innerHTML = `
-    <div class="callout warn"><b>⚠️ Digestate পরীক্ষা</b>নতুন digestate ব্যাচের pH, EC ও অ্যামোনিয়া পরীক্ষা করুন — कেঁচোর बेडে দেওয়ার আগে।</div>
+    <div class="callout warn"><b>⚠️ Digestate পরীক্ষা</b>নতুন digestate ব্যাচের pH, EC ও অ্যামোনিয়া পরীক্ষা করুন — কেঁচোর বেডে দেওয়ার আগে।</div>
     <div class="callout"><b>🔧 প্ল্যান্ট মেইনটেন্যান্স</b>H₂S ফিল্টার ২ সপ্তাহ পর পরিবর্তনের সময়।</div>
     <div class="callout ok"><b>✅ ভালো অবস্থা</b>Bed A ও B-তে কেঁচোর সংখ্যা গত সপ্তাহের তুলনায় বেড়েছে।</div>`;
 }
