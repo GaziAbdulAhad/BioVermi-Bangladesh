@@ -1,371 +1,663 @@
 /* ============================================================
-   BioVermi Bangladesh — Premium Design System (CSS)
+   BioVermi Bangladesh — Core Application (Updated for new data.js)
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
 
-:root {
-  --forest: #1b4332; 
-  --leaf: #2d6a4f; 
-  --leaf-2: #40916c; 
-  --leaf-3: #52b788;
-  --earth: #7f5539; 
-  --earth-2: #9c6644; 
-  --gold: #b08968;
-  --warm-white: #fdfcf7; 
-  --beige: #f2ede3;
-  --surface: #ffffff; 
-  --surface-2: #f7f4ec;
-  --border: #e4ddcf; 
-  --border-2: #d9d1bf;
-  --text: #1f2a24; 
-  --text-2: #4d5b53; 
-  --muted: #8a978f;
-  --danger: #b23a48; 
-  --warn: #c07a1c; 
-  --ok: #2d6a4f; 
-  --info: #2c6e91;
-  --shadow: 0 1px 2px rgba(27,67,50,.06), 0 4px 16px rgba(27,67,50,.06);
-  --shadow-lg: 0 10px 40px rgba(27,67,50,.14);
-  --radius: 14px; 
-  --radius-sm: 10px; 
-  --radius-lg: 22px;
-  --sidebar-w: 288px; 
-  --topbar-h: 64px;
+/* ---------- Theme ---------- */
+function initTheme(){
+  const saved = LS.get('theme', 'light');
+  document.documentElement.setAttribute('data-theme', saved);
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  LS.set('theme', next);
+  toast(next === 'dark' ? '🌙 ডার্ক মোড চালু' : '☀️ লাইট মোড চালু');
 }
 
-/* ডার্ক মোড কালার প্যালেট */
-[data-theme="dark"] {
-  --forest: #0f2e22; 
-  --leaf: #52b788; 
-  --leaf-2: #74c69d; 
-  --leaf-3: #95d5b2;
-  --earth: #a07a52; 
-  --earth-2: #b08968; 
-  --gold: #d4a373;
-  --warm-white: #0b120e; 
-  --beige: #111a15;
-  --surface: #141e18; 
-  --surface-2: #18241d;
-  --border: #243029; 
-  --border-2: #2e3d34;
-  --text: #e9efe9; 
-  --text-2: #b3c2b8; 
-  --muted: #7f8f85;
-  --danger: #e07a86; 
-  --warn: #e0a84a; 
-  --ok: #74c69d; 
-  --info: #6fb3d2;
-  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.35);
-  --shadow-lg: 0 10px 40px rgba(0,0,0,.55);
+/* ---------- Toast ---------- */
+function toast(msg, type='ok'){
+  let wrap = $('.toast-wrap');
+  if(!wrap){ wrap = document.createElement('div'); wrap.className='toast-wrap'; document.body.appendChild(wrap); }
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type==='error'?'error':type==='warn'?'warn':'');
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(30px)'; t.style.transition='.3s'; setTimeout(()=>t.remove(),320); }, 3000);
 }
 
-/* বেসিক রিসেট */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Hind Siliguri', 'Inter', system-ui, sans-serif;
-  background: var(--warm-white); 
-  color: var(--text);
-  line-height: 1.75; 
-  font-size: 15.5px;
-  transition: background .25s ease, color .25s ease;
+/* ---------- Progress ---------- */
+function getProgress(){ return LS.get('progress', {}); }
+function toggleComplete(id){
+  const p = getProgress();
+  if(p[id]){ delete p[id]; } else { p[id] = Date.now(); }
+  LS.set('progress', p);
+  updateProgressUI();
+  return !!p[id];
 }
-h1, h2, h3, h4, h5 { line-height: 1.35; color: var(--text); }
-h1 { font-size: 2rem; font-weight: 700; }
-h2 { font-size: 1.45rem; font-weight: 700; }
-h3 { font-size: 1.15rem; font-weight: 600; }
-h4 { font-size: 1rem; font-weight: 600; }
-a { color: var(--leaf-2); text-decoration: none; transition: color 0.2s; }
-a:hover { color: var(--leaf); }
-button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+function updateProgressUI(){
+  const p = getProgress();
+  const done = Object.keys(p).length;
+  const total = MODULES.length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  $$('[data-progress-bar]').forEach(el=>el.style.width = pct+'%');
+  $$('[data-progress-text]').forEach(el=>el.textContent = `${done} / ${total} মডিউল সম্পন্ন (${pct}%)`);
+  $$('.nav-sub .nav-item').forEach(a=>{
+    const id = a.getAttribute('data-mid');
+    a.classList.toggle('completed', !!p[id]);
+  });
+}
+
+/* ---------- Sidebar ---------- */
+function buildSidebar(){
+  const parts = {
+    biogas:{label:'বায়োগ্যাস উৎপাদন', icon:'🔥'},
+    vermicompost:{label:'ভার্মিকম্পোস্ট উৎপাদন', icon:'🪱'},
+    integrated:{label:'সমন্বিত খামার', icon:'🔄'},
+    business:{label:'ব্যবসা ও বাজার', icon:'💰'},
+    learning:{label:'শিক্ষা ও রেফারেন্স', icon:'🎓'}
+  };
+  const sidebar = $('#sidebar');
+  if(!sidebar) return;
+  let html = '';
+  for(const key in parts){
+    const mods = MODULES.filter(m=>m.part===key);
+    if(mods.length === 0) continue;
+    html += `<div class="nav-group">
+      <div class="nav-group-title">${parts[key].label}</div>
+      <div class="nav-sub open">
+        ${mods.map(m=>`<div class="nav-item" data-mid="${m.id}" onclick="location.href='${pageForPart(key)}?module=${m.id}'">
+          <span class="ico" style="font-size:13px">${m.num}.</span>
+          <span style="flex:1; line-height:1.3; font-size:13.5px">${m.title}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+  const extra = `
+    <div class="nav-group">
+      <div class="nav-group-title">সাধারণ</div>
+      <a class="nav-item" href="index.html"><span class="ico">🏠</span> হোম</a>
+      <a class="nav-item" href="dashboard.html"><span class="ico">📊</span> ড্যাশবোর্ড</a>
+      <a class="nav-item" href="calculators.html"><span class="ico">🧮</span> ক্যালকুলেটর</a>
+      <a class="nav-item" href="glossary.html"><span class="ico">📖</span> শব্দকোষ</a>
+      <a class="nav-item" href="references.html"><span class="ico">📚</span> রেফারেন্স</a>
+    </div>`;
+  sidebar.querySelector('.sidebar-scroll').innerHTML = html + extra;
+  updateProgressUI();
+}
+function pageForPart(part){
+  if(part==='biogas') return 'biogas.html';
+  if(part==='vermicompost') return 'vermicompost.html';
+  if(part==='integrated') return 'integrated-farm.html';
+  if(part==='business') return 'integrated-farm.html'; // Business mapped to integrated
+  return 'glossary.html'; // Learning mapped to glossary
+}
+
+/* ---------- Mobile sidebar ---------- */
+function toggleSidebar(){
+  $('#sidebar')?.classList.toggle('open');
+}
+
+/* ---------- Search ---------- */
+function initSearch(){
+  const input = $('#globalSearch');
+  const results = $('#searchResults');
+  if(!input || !results) return;
+  input.addEventListener('input', ()=>{
+    const q = input.value.trim().toLowerCase();
+    if(q.length < 2){ results.classList.remove('show'); results.innerHTML=''; return; }
+    const matches = MODULES.filter(m =>
+      m.title.toLowerCase().includes(q) ||
+      (m.en && m.en.toLowerCase().includes(q)) ||
+      (m.summary && m.summary.toLowerCase().includes(q)) ||
+      (m.terms && m.terms.some(t=> t.en.toLowerCase().includes(q) || t.bn.includes(q)))
+    ).slice(0, 12);
+    
+    if(!matches.length){
+      results.innerHTML = '<div class="sr-item"><span>কোনো ফলাফল পাওয়া যায়নি</span></div>';
+    } else {
+      results.innerHTML = matches.map(m=>`
+        <div class="sr-item" onclick="location.href='${pageForPart(m.part)}?module=${m.id}'">
+          <b>${m.num}. ${m.title}</b>
+          <span>${m.en || ''}</span>
+        </div>`).join('');
+    }
+    results.classList.add('show');
+  });
+  document.addEventListener('click', e=>{
+    if(!e.target.closest('.search-wrap')) results.classList.remove('show');
+  });
+}
+
+/* ---------- Module listing ---------- */
+function renderModuleList(part, container){
+  const mods = MODULES.filter(m=>m.part===part);
+  const p = getProgress();
+  container.innerHTML = `<div class="mod-grid">${mods.map(m=>`
+    <div class="mod-card" onclick="location.href='${pageForPart(part)}?module=${m.id}'">
+      <div class="num">${m.num}</div>
+      ${p[m.id] ? '<span class="done-badge">✓ সম্পন্ন</span>' : ''}
+      <h4>${m.title}</h4>
+      <p>${m.summary||''}</p>
+      <div class="meta"><span>📖 ${m.read} মিনিট</span><span>${m.icon||''} ${m.en||''}</span></div>
+    </div>`).join('')}</div>`;
+}
+
+/* ---------- Module detail ---------- */
+function renderModule(id, container){
+  const m = MODULES.find(x=>x.id===id);
+  if(!m){
+    container.innerHTML = '<div class="empty"><div class="em">🔍</div><p>মডিউলটি পাওয়া যায়নি।</p><a class="btn btn-primary" href="index.html">হোমে ফিরুন</a></div>';
+    return;
+  }
+  const p = getProgress();
+  const isDone = !!p[m.id];
+  const samePart = MODULES.filter(x=>x.part===m.part);
+  const idx = samePart.findIndex(x=>x.id===m.id);
+  const prev = idx > 0 ? samePart[idx-1] : null;
+  const next = idx < samePart.length-1 ? samePart[idx+1] : null;
+
+  // ১. সেকশন রেন্ডার
+  const sections = m.sections.map((s, i)=>`
+    <section class="lesson-section" id="sec-${i+1}">
+      <h2>${s.h}</h2>
+      ${(s.p||[]).map(par=>`<p>${par}</p>`).join('')}
+      ${s.list ? `<ul>${s.list.map(li=>`<li>${li}</li>`).join('')}</ul>` : ''}
+      ${s.table ? `<div class="table-wrap"><table><thead><tr>${s.table.head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${s.table.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` : ''}
+      ${s.callout ? `<div class="callout ${s.callout.type||''}"><b>${s.callout.title}</b>${s.callout.body}</div>` : ''}
+    </section>`).join('');
+
+  // ২. টার্ম রেন্ডার
+  const terms = m.terms && m.terms.length ? `
+    <section class="lesson-section" id="terms">
+      <h2>মূল টার্ম</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>English</th><th>বাংলা</th><th>ব্যাখ্যা</th></tr></thead>
+        <tbody>${m.terms.map(t=>`<tr><td><b>${t.en}</b></td><td>${t.bn}</td><td>${t.d}</td></tr>`).join('')}</tbody>
+      </table></div>
+    </section>` : '';
+
+  // ৩. অবজেক্টিভস (শিক্ষার লক্ষ্য) রেন্ডার
+  const objectives = m.objectives && m.objectives.length ? `
+    <div class="objectives">
+      <h3>🎯 শিক্ষার লক্ষ্য</h3>
+      <ul>${m.objectives.map(o=>`<li>${o}</li>`).join('')}</ul>
+    </div>` : '';
+
+  // ৪. মেইন HTML রেন্ডার
+  container.innerHTML = `
+    <div class="lesson-layout">
+      <div class="lesson-main">
+        <div class="page-head">
+          <div class="crumb"><a href="index.html">হোম</a> › <a href="${pageForPart(m.part)}">${partLabel(m.part)}</a> › মডিউল ${m.num}</div>
+          <h1>${m.icon||''} ${m.title}</h1>
+          <p style="color:var(--muted); font-size:14px; margin-top:4px;">${m.en||''}</p>
+        </div>
+
+        <div class="lesson-meta">
+          <span>📖 পাঠের সময়: ~${m.read} মিনিট</span>
+          <span>🔢 মডিউল ${m.num} / ৫৩</span>
+          <span>${isDone ? '✅ সম্পন্ন' : '⏳ অসম্পন্ন'}</span>
+        </div>
+
+        ${objectives}
+
+        ${sections}
+
+        ${terms}
+
+        ${m.safety ? `<div class="callout ${m.safety.includes('কখনো')||m.safety.includes('বিপদ')?'danger':'warn'}"><b>⚠️ নিরাপত্তা সতর্কতা</b>${m.safety}</div>` : ''}
+
+        ${m.refs && m.refs.length ? `<section class="lesson-section"><h2>রেফারেন্স</h2><ul class="refs">${m.refs.map(r=>`<li>${r}</li>`).join('')}</ul></section>` : ''}
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
+          <button class="btn ${isDone?'btn-ghost':'btn-primary'}" onclick="handleComplete('${m.id}')">${isDone?'↺ সম্পন্নতা সরান':'✅ পাঠ সম্পন্ন হিসেবে চিহ্নিত করুন'}</button>
+          <button class="btn btn-ghost" onclick="window.print()">🖨️ প্রিন্ট করুন</button>
+        </div>
+
+        <div class="lesson-nav">
+          ${prev ? `<a class="btn btn-ghost" href="${pageForPart(prev.part)}?module=${prev.id}" style="flex-direction:column;align-items:flex-start;height:auto;padding:12px 16px">
+            <span class="lbl">← পূর্ববর্তী</span><span class="ttl">${prev.title}</span></a>` : '<span></span>'}
+          ${next ? `<a class="btn btn-ghost" href="${pageForPart(next.part)}?module=${next.id}" style="flex-direction:column;align-items:flex-end;height:auto;padding:12px 16px;text-align:right">
+            <span class="lbl">পরবর্তী →</span><span class="ttl">${next.title}</span></a>` : '<span></span>'}
+        </div>
+      </div>
+
+      <aside class="lesson-toc">
+        <b>এই পাঠে</b>
+        ${m.sections.map((s,i)=>`<a href="#sec-${i+1}">${s.h}</a>`).join('')}
+        ${m.terms && m.terms.length ? '<a href="#terms">মূল টার্ম</a>' : ''}
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)">
+          <div class="progress"><div style="width:${Math.min(100,(m.read/30)*100)}%"></div></div>
+        </div>
+      </aside>
+    </div>`;
+
+  // Scroll spy
+  const tocLinks = $$('.lesson-toc a');
+  const secs = $$('.lesson-section');
+  window.addEventListener('scroll', ()=>{
+    let cur = '';
+    secs.forEach(s=>{ if(s.getBoundingClientRect().top < 120) cur = s.id; });
+    tocLinks.forEach(a=>a.classList.toggle('active', a.getAttribute('href')==='#'+cur));
+  }, {passive:true});
+}
+function handleComplete(id){
+  const done = toggleComplete(id);
+  toast(done ? '✅ মডিউল সম্পন্ন হয়েছে!' : '↺ সম্পন্নতা সরানো হয়েছে', done?'ok':'warn');
+  setTimeout(()=>location.reload(), 400);
+}
+function partLabel(p){
+  return {biogas:'বায়োগ্যাস', vermicompost:'ভার্মিকম্পোস্ট', integrated:'সমন্বিত খামার', business:'ব্যবসা', learning:'শিক্ষা'}[p] || p;
+}
 
 /* ============================================================
-   লেআউট (Layout)
+   CALCULATORS
    ============================================================ */
-.app { display: flex; min-height: 100vh; }
-.sidebar {
-  width: var(--sidebar-w); flex-shrink: 0; background: var(--surface);
-  border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; bottom: 0;
-  display: flex; flex-direction: column; z-index: 60; transition: transform .28s ease;
-}
-.sidebar-brand {
-  display: flex; align-items: center; gap: 12px; padding: 18px 20px;
-  border-bottom: 1px solid var(--border);
-}
-.brand-mark {
-  width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
-  background: linear-gradient(135deg, var(--leaf) 0%, var(--leaf-3) 100%);
-  display: grid; place-items: center; color: #fff; font-size: 22px;
-  box-shadow: 0 4px 14px rgba(45,106,79,.35);
-}
-.brand-text b { display: block; font-size: 1rem; line-height: 1.2; }
-.brand-text span { font-size: 11.5px; color: var(--muted); letter-spacing: .3px; }
-.sidebar-scroll { overflow-y: auto; flex: 1; padding: 12px 10px 20px; }
-.sidebar-scroll::-webkit-scrollbar { width: 6px; }
-.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 4px; }
-
-.nav-group { margin-bottom: 6px; }
-.nav-group-title {
-  font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
-  color: var(--muted); padding: 12px 14px 6px; font-weight: 600;
-}
-.nav-item {
-  display: flex; align-items: center; gap: 11px; padding: 9px 13px; border-radius: 10px;
-  color: var(--text-2); font-size: 14.2px; font-weight: 500; cursor: pointer;
-  transition: .18s; user-select: none; text-decoration: none;
-}
-.nav-item:hover { background: var(--surface-2); color: var(--leaf-2); }
-.nav-item.active {
-  background: linear-gradient(90deg, rgba(82,183,136,.16), rgba(82,183,136,.04));
-  color: var(--leaf-2); font-weight: 600;
-}
-.nav-item .ico { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
-
-.main { flex: 1; margin-left: var(--sidebar-w); min-width: 0; display: flex; flex-direction: column; }
-
-/* ============================================================
-   টপবার (Topbar)
-   ============================================================ */
-.topbar {
-  height: var(--topbar-h); position: sticky; top: 0; z-index: 40;
-  background: color-mix(in srgb, var(--surface) 85%, transparent);
-  backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 14px; padding: 0 22px;
-}
-.icon-btn {
-  width: 40px; height: 40px; border-radius: 11px; border: 1px solid var(--border);
-  background: var(--surface); color: var(--text-2); display: grid; place-items: center;
-  cursor: pointer; font-size: 16px; transition: .18s;
-}
-.icon-btn:hover { background: var(--surface-2); color: var(--leaf-2); border-color: var(--leaf-3); }
-.hamburger { display: none; }
-
-.search-wrap { position: relative; flex: 1; max-width: 520px; }
-.search-wrap input {
-  width: 100%; height: 42px; border-radius: 11px; border: 1px solid var(--border);
-  background: var(--surface-2); padding: 0 16px 0 42px; font-size: 14px; color: var(--text);
-  font-family: inherit; outline: none; transition: .18s;
-}
-.search-wrap input:focus { border-color: var(--leaf-3); background: var(--surface); box-shadow: 0 0 0 4px rgba(82,183,136,.12); }
-.search-wrap .s-ico { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 15px; }
-.search-results {
-  position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: var(--surface);
-  border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-lg);
-  max-height: 420px; overflow-y: auto; display: none; z-index: 80;
-}
-.search-results.show { display: block; }
-.sr-item { padding: 11px 16px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; flex-direction: column; gap: 2px; color: var(--text); }
-.sr-item:last-child { border-bottom: none; }
-.sr-item:hover { background: var(--surface-2); }
-.sr-item b { font-size: 14px; font-weight: 600; }
-.sr-item span { font-size: 12.2px; color: var(--muted); }
-
-.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-.avatar {
-  width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--earth), var(--gold));
-  display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 14px;
-}
-.content { padding: 28px 30px 60px; max-width: 1240px; width: 100%; margin: 0 auto; }
-
-/* ============================================================
-   UI এলিমেন্টস (Cards & Buttons)
-   ============================================================ */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
-.card-pad { padding: 20px; }
-.grid { display: grid; gap: 16px; }
-.g4 { grid-template-columns: repeat(4, 1fr); }
-.g3 { grid-template-columns: repeat(3, 1fr); }
-.g2 { grid-template-columns: repeat(2, 1fr); }
-
-.stat {
-  padding: 18px 18px 16px; position: relative; overflow: hidden;
-  border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border);
-  box-shadow: var(--shadow); transition: .2s;
-}
-.stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: var(--leaf-3); }
-.stat .s-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-.stat .s-ico { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 17px; background: rgba(82,183,136,.14); color: var(--leaf-2); }
-.stat.info .s-ico { background: rgba(44,110,145,.15); color: var(--info); }
-.stat.earth .s-ico { background: rgba(176,137,104,.18); color: var(--earth-2); }
-.stat.warn .s-ico { background: rgba(192,122,28,.15); color: var(--warn); }
-.stat .s-label { font-size: 12.6px; color: var(--muted); font-weight: 500; }
-.stat .s-value { font-size: 1.55rem; font-weight: 700; line-height: 1.2; letter-spacing: -.3px; }
-.stat .s-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
-.stat .s-tag { position: absolute; top: 14px; right: 14px; font-size: 10px; letter-spacing: .5px; padding: 2px 8px; border-radius: 20px; background: var(--surface-2); color: var(--muted); text-transform: uppercase; font-weight: 600; }
-
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  height: 42px; padding: 0 18px; border-radius: 11px; border: 1px solid transparent;
-  font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: .18s; text-decoration: none; white-space: nowrap;
-}
-.btn-primary { background: linear-gradient(135deg, var(--leaf), var(--leaf-3)); color: #fff; box-shadow: 0 4px 14px rgba(45,106,79,.28); }
-.btn-primary:hover { filter: brightness(1.06); color: #fff; transform: translateY(-1px); }
-.btn-ghost { background: var(--surface); border-color: var(--border); color: var(--text-2); }
-.btn-ghost:hover { background: var(--surface-2); color: var(--leaf-2); border-color: var(--leaf-3); }
-
-/* ============================================================
-   হিরো সেকশন (Hero)
-   ============================================================ */
-.hero {
-  position: relative; overflow: hidden; border-radius: var(--radius-lg); padding: 44px 40px; margin-bottom: 28px;
-  background: radial-gradient(120% 120% at 100% 0%, rgba(82,183,136,.20), transparent 55%),
-              radial-gradient(120% 120% at 0% 100%, rgba(176,137,104,.16), transparent 55%),
-              linear-gradient(135deg, #1b4332 0%, #2d6a4f 55%, #40916c 100%);
-  color: #fff; box-shadow: var(--shadow-lg);
-}
-.hero .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: 1.4px; text-transform: uppercase; background: rgba(255,255,255,.14); padding: 5px 14px; border-radius: 20px; margin-bottom: 16px; font-weight: 600; }
-.hero h1 { color: #fff; font-size: 2.2rem; max-width: 720px; line-height: 1.28; margin-bottom: 12px; }
-.hero p { color: rgba(255,255,255,.86); max-width: 640px; margin-bottom: 22px; }
-.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-.hero .btn-primary { background: #fff; color: var(--forest); box-shadow: 0 6px 20px rgba(0,0,0,.2); }
-.hero .btn-primary:hover { background: #f4f9f5; }
-.hero .btn-ghost { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.3); color: #fff; }
-.hero .btn-ghost:hover { background: rgba(255,255,255,.2); color: #fff; }
-
-/* ============================================================
-   মডিউল কার্ড (Module Cards)
-   ============================================================ */
-.mod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-.mod-card {
-  padding: 20px; border-radius: var(--radius); background: var(--surface); text-decoration: none; color: inherit;
-  border: 1px solid var(--border); box-shadow: var(--shadow); cursor: pointer; transition: .2s; display: flex; flex-direction: column; gap: 10px; position: relative;
-}
-.mod-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--leaf-3); }
-.mod-card .num { width: 38px; height: 38px; border-radius: 10px; background: rgba(82,183,136,.14); color: var(--leaf-2); display: grid; place-items: center; font-weight: 700; font-size: 14px; }
-.mod-card h4 { font-size: 1rem; line-height: 1.4; margin: 0; }
-.mod-card p { font-size: 13px; color: var(--text-2); line-height: 1.6; margin: 0; }
-.mod-card .meta { margin-top: auto; display: flex; gap: 12px; font-size: 11.8px; color: var(--muted); padding-top: 8px; border-top: 1px dashed var(--border); }
-
-/* ============================================================
-   লেসন ও কন্টেন্ট ভিউ (Lesson View)
-   ============================================================ */
-.lesson-layout { display: grid; grid-template-columns: 1fr 260px; gap: 28px; align-items: start; }
-.lesson-toc { position: sticky; top: calc(var(--topbar-h) + 20px); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; font-size: 13px; }
-.lesson-toc b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; }
-.lesson-toc a { display: block; padding: 6px 8px; border-radius: 7px; color: var(--text-2); font-size: 12.8px; line-height: 1.4; border-left: 2px solid transparent; cursor: pointer; text-decoration: none; }
-.lesson-toc a:hover { background: var(--surface-2); color: var(--leaf-2); }
-.lesson-toc a.active { color: var(--leaf-2); border-left-color: var(--leaf-3); background: rgba(82,183,136,.08); font-weight: 600; }
-
-.lesson-section { margin-bottom: 32px; scroll-margin-top: 90px; }
-.lesson-section h2 { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 2px solid var(--border); font-size: 1.3rem; }
-.lesson-section h2::before { content: ''; width: 6px; height: 22px; border-radius: 3px; background: linear-gradient(180deg, var(--leaf-3), var(--leaf)); flex-shrink: 0; }
-.lesson-section p { margin-bottom: 12px; color: var(--text-2); font-size: 15px; }
-.lesson-section ul, .lesson-section ol { margin: 10px 0 16px 22px; color: var(--text-2); }
-.lesson-section li { margin-bottom: 6px; font-size: 14.6px; }
-
-.table-wrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--border); border-radius: var(--radius-sm); }
-table { width: 100%; border-collapse: collapse; font-size: 13.6px; background: var(--surface); min-width: 520px; }
-th, td { padding: 10px 13px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
-th { background: var(--surface-2); font-weight: 600; color: var(--text); font-size: 12.6px; text-transform: uppercase; letter-spacing: .4px; }
-tr:last-child td { border-bottom: none; }
-tbody tr:hover { background: rgba(82,183,136,.05); }
-
-.callout { border-radius: var(--radius-sm); padding: 15px 18px; margin: 16px 0; border-left: 4px solid var(--info); background: rgba(44,110,145,.08); font-size: 14px; }
-.callout.warn { border-color: var(--warn); background: rgba(192,122,28,.09); }
-.callout.danger { border-color: var(--danger); background: rgba(178,58,72,.08); }
-.callout b { display: block; margin-bottom: 4px; color: var(--text); }
-
-/* ============================================================
-   ক্যালকুলেটর ও ফর্ম (Forms & Calculators)
-   ============================================================ */
-.field { margin-bottom: 14px; }
-.field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
-.input, select.input {
-  width: 100%; height: 44px; border-radius: 10px; border: 1px solid var(--border);
-  background: var(--surface-2); padding: 0 14px; font-size: 14px; color: var(--text); font-family: inherit; outline: none; transition: .16s;
-}
-.input:focus { border-color: var(--leaf-3); background: var(--surface); box-shadow: 0 0 0 4px rgba(82,183,136,.13); }
-.calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.calc-result { background: linear-gradient(135deg, rgba(82,183,136,.12), rgba(45,106,79,.06)); border: 1px solid rgba(82,183,136,.3); border-radius: var(--radius); padding: 20px; margin-top: 16px; display: none; }
-.calc-result h4 { margin-bottom: 12px; display: flex; align-items: center; gap: 8px; justify-content: space-between; }
-.res-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 14px; }
-.res-row:last-child { border-bottom: none; }
-.res-row span:first-child { color: var(--text-2); }
-.res-row span:last-child { font-weight: 700; color: var(--leaf-2); }
-
-.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-.tab { padding: 7px 15px; border-radius: 9px; font-size: 13.4px; font-weight: 600; cursor: pointer; color: var(--text-2); border: 1px solid transparent; transition: .16s; background: transparent; font-family: inherit; }
-.tab:hover { background: var(--surface-2); color: var(--leaf-2); }
-.tab.active { background: rgba(82,183,136,.14); color: var(--leaf-2); border-color: rgba(82,183,136,.3); }
-
-/* ============================================================
-   ড্যাশবোর্ড (Dashboard)
-   ============================================================ */
-.chart-box { position: relative; height: 280px; width: 100%; }
-.task { display: flex; align-items: center; gap: 11px; padding: 11px 4px; border-bottom: 1px solid var(--border); font-size: 14px; }
-.task:last-child { border-bottom: none; }
-.task input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--leaf-2); cursor: pointer; flex-shrink: 0; }
-.task.done span { text-decoration: line-through; color: var(--muted); }
-
-/* ============================================================
-   রেসপন্সিভ ডিজাইন (Responsive)
-   ============================================================ */
-@media(max-width: 1180px) {
-  .g4 { grid-template-columns: repeat(2, 1fr); }
-  .lesson-layout { grid-template-columns: 1fr; }
-  .lesson-toc { display: none; }
-}
-@media(max-width: 900px) {
-  .g3 { grid-template-columns: repeat(2, 1fr); }
-  .hero { padding: 32px 24px; }
-  .hero h1 { font-size: 1.7rem; }
-}
-@media(max-width: 760px) {
-  :root { --sidebar-w: 270px; }
-  .sidebar { transform: translateX(-100%); box-shadow: var(--shadow-lg); }
-  .sidebar.open { transform: translateX(0); }
-  .main { margin-left: 0; }
-  .hamburger { display: grid; }
-  .content { padding: 20px 16px 60px; }
-  .g4, .g3, .g2, .calc-grid { grid-template-columns: 1fr; }
-  .search-wrap { max-width: none; }
-  .mod-grid { grid-template-columns: 1fr; }
-  .hero h1 { font-size: 1.5rem; }
-  .lesson-section h2 { font-size: 1.15rem; }
+function fmt(n, d=2){ return Number(n).toLocaleString('bn-BD',{maximumFractionDigits:d}); }
+function val(id){ const el = document.getElementById(id); if(!el) return NaN; return parseFloat(el.value); }
+function setErr(id, msg){
+  const el = document.getElementById(id);
+  const e = document.getElementById(id+'Err');
+  if(el) el.classList.toggle('invalid', !!msg);
+  if(e){ e.textContent = msg || ''; e.classList.toggle('show', !!msg); }
 }
 
-/* প্রিন্ট স্টাইল */
-@media print {
-  .sidebar, .topbar, .lesson-toc, .hero-actions, .btn { display: none !important; }
-  .main { margin: 0; }
-  .content { padding: 0; }
-  .card, .lesson-section { box-shadow: none; border-color: #ccc; }
+function calcSlurry(){
+  const dung = val('sd-dung'), mc = val('sd-mc'), tts = val('sd-ts');
+  let ok = true;
+  if(!(dung > 0)){ setErr('sd-dung','সঠিক পরিমাণ দিন'); ok=false; } else setErr('sd-dung','');
+  if(!(mc >= 0 && mc < 100)){ setErr('sd-mc','০–৯৯ এর মধ্যে দিন'); ok=false; } else setErr('sd-mc','');
+  if(!(tts > 0 && tts < 100)){ setErr('sd-ts','১–৯৯ এর মধ্যে দিন'); ok=false; } else setErr('sd-ts','');
+  if(!ok) return;
+
+  const currentTS = dung * (1 - mc/100);
+  const targetTS = currentTS / (tts/100);
+  const water = Math.max(0, targetTS - dung);
+  const totalSlurry = dung + water;
+
+  document.getElementById('sd-result').innerHTML = `
+    <h4>ফলাফল <span class="res-badge">Estimated</span></h4>
+    <div class="res-row"><span>বর্তমান শুকনো ভর (TS)</span><span>${fmt(currentTS)} kg</span></div>
+    <div class="res-row"><span>প্রয়োজনীয় পানি</span><span>${fmt(water)} লিটার</span></div>
+    <div class="res-row"><span>মোট Slurry</span><span>${fmt(totalSlurry)} kg</span></div>
+    <div class="res-row"><span>Daily Feed Volume</span><span>≈ ${fmt(totalSlurry)} লিটার</span></div>
+    <div class="steps">
+      <div>১. শুকনো ভর = গোবর × (১ − আর্দ্রতা/১০০) = <code>${fmt(currentTS)} kg</code></div>
+      <div>২. Target Total Mass = শুকনো ভর ÷ (Target TS/১০০) = <code>${fmt(targetTS)} kg</code></div>
+      <div>৩. পানি = Target Total Mass − গোবর = <code>${fmt(water)} লিটার</code></div>
+      <div>৪. Slurry = গোবর + পানি = <code>${fmt(totalSlurry)} kg</code></div>
+    </div>
+    <div class="callout" style="margin-top:12px;font-size:12.5px">এটি আনুমানিক হিসাব; প্রকৃত TS ল্যাবে যাচাই করুন। ডাইজেস্টার ডিজাইনে যোগ্য প্রকৌশলীর পরামর্শ নিন।</div>
+  `;
+  document.getElementById('sd-result').style.display = 'block';
 }
 
+function calcSizing(){
+  const slurry = val('bs-slurry'), hrt = val('bs-hrt'), gasY = val('bs-yield');
+  let ok = true;
+  if(!(slurry>0)){ setErr('bs-slurry','সঠিক slurry দিন'); ok=false; } else setErr('bs-slurry','');
+  if(!(hrt>0)){ setErr('bs-hrt','HRT দিন'); ok=false; } else setErr('bs-hrt','');
+  if(!(gasY>0)){ setErr('bs-yield','গ্যাস উৎপাদন হার দিন'); ok=false; } else setErr('bs-yield','');
+  if(!ok) return;
 
-/* ============================================================
-   Added: classes used by script.js but missing in the stylesheet
-   ============================================================ */
-.page-head h1 { font-size: 1.7rem; line-height: 1.3; }
-.crumb { font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
-.crumb a { color: var(--leaf-2); text-decoration: none; }
-.lesson-main { min-width: 0; }
-.lesson-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin: 10px 0 18px; }
-.objectives { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 22px; }
-.objectives h3 { font-size: 1rem; margin-bottom: 8px; }
-.objectives ul, .refs { padding-left: 20px; }
-.lesson-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
-.lesson-nav .lbl { font-size: 11.5px; color: var(--muted); }
-.lesson-nav .ttl { font-size: 13.5px; font-weight: 600; }
-.nav-sub { display: block; }
-.progress { height: 6px; border-radius: 6px; background: var(--border); overflow: hidden; }
-.progress > div { height: 100%; background: var(--leaf-2); }
-.gloss-item { padding: 14px 18px; border-bottom: 1px solid var(--border); }
-.gloss-item:last-child { border-bottom: none; }
-.gloss-item .bn { color: var(--leaf-2); font-weight: 600; margin-top: 2px; }
-.gloss-item p { font-size: 13.5px; color: var(--text-2); margin-top: 4px; word-break: break-word; }
-.empty { text-align: center; padding: 40px 20px; color: var(--muted); }
-.empty .em { font-size: 34px; margin-bottom: 8px; }
-.res-badge { font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: rgba(192,122,28,.15); color: var(--warn); }
-.steps { margin-top: 12px; padding: 12px 14px; border-radius: 10px; background: var(--surface-2); font-size: 12.8px; color: var(--text-2); line-height: 1.8; }
-.steps code { background: var(--surface); padding: 1px 6px; border-radius: 6px; font-weight: 600; }
-.input.invalid { border-color: var(--danger); }
-.field-err { display: none; color: var(--danger); font-size: 12px; margin-top: 4px; }
-.field-err.show { display: block; }
-.tabs { display: flex; gap: 8px; }
-.tab { cursor: pointer; }
-.toast-wrap { position: fixed; right: 18px; bottom: 18px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
-.toast { background: #2d6a4f; color: #fff; padding: 11px 16px; border-radius: 10px; font-size: 13.5px; box-shadow: var(--shadow-lg); }
-.toast.warn { background: var(--warn); }
-.toast.error { background: var(--danger); }
-@media (max-width: 640px) { .calc-grid { grid-template-columns: 1fr; } }
+  const digester = slurry * hrt;
+  const gasDaily = slurry * gasY;
+  const gasHolder = gasDaily * 0.4;
+  const digestate = slurry * 0.85;
+
+  document.getElementById('bs-result').innerHTML = `
+    <h4>ডিজাইন ফলাফল <span class="res-badge">Estimated</span></h4>
+    <div class="res-row"><span>Digester Volume</span><span>${fmt(digester)} m³</span></div>
+    <div class="res-row"><span>Daily Gas Production</span><span>${fmt(gasDaily)} m³/day</span></div>
+    <div class="res-row"><span>Gas Holder Volume (৪০%)</span><span>${fmt(gasHolder)} m³</span></div>
+    <div class="res-row"><span>আনুমানিক Digestate</span><span>${fmt(digestate)} m³/day</span></div>
+    <div class="steps">
+      <div>Digester Volume = Slurry × HRT = <code>${fmt(slurry)} × ${fmt(hrt)} = ${fmt(digester)} m³</code></div>
+      <div>Gas = Slurry × Yield = <code>${fmt(gasDaily)} m³/day</code></div>
+      <div>Gas Holder ≈ ৪০% × Gas = <code>${fmt(gasHolder)} m³</code></div>
+    </div>
+    <div class="callout danger" style="margin-top:12px;font-size:12.5px"><b>Engineering Design আবশ্যক</b>বাস্তব নির্মাণের আগে সাইট-ভিত্তিক মাটি পরীক্ষা ও যোগ্য সিভিল ইঞ্জিনিয়ারের নকশা নিন।</div>
+  `;
+  document.getElementById('bs-result').style.display = 'block';
+}
+
+function calcBusiness(){
+  const capex = val('bb-capex'), monthlyCost = val('bb-cost'), gasUse = val('bb-gas'), gasPrice = val('bb-price');
+  let ok = true;
+  if(!(capex>=0)){ setErr('bb-capex','সঠিক বিনিয়োগ দিন'); ok=false; } else setErr('bb-capex','');
+  if(!(monthlyCost>=0)){ setErr('bb-cost','সঠিক খরচ দিন'); ok=false; } else setErr('bb-cost','');
+  if(!ok) return;
+  const rev = (gasUse||0) * (gasPrice||0);
+  const net = rev - monthlyCost;
+  const annualNet = net * 12;
+  const payback = (net > 0 && capex > 0) ? capex / annualNet : Infinity;
+  const roi = capex > 0 ? (annualNet / capex) * 100 : 0;
+
+  document.getElementById('bb-result').innerHTML = `
+    <h4>আর্থিক বিশ্লেষণ <span class="res-badge">Estimated</span></h4>
+    <div class="res-row"><span>মাসিক আয়</span><span>৳ ${fmt(rev)}</span></div>
+    <div class="res-row"><span>মাসিক খরচ</span><span>৳ ${fmt(monthlyCost)}</span></div>
+    <div class="res-row"><span>মাসিক নিট মুনাফা</span><span>৳ ${fmt(net)}</span></div>
+    <div class="res-row"><span>বার্ষিক নিট মুনাফা</span><span>৳ ${fmt(annualNet)}</span></div>
+    <div class="res-row"><span>Payback Period</span><span>${isFinite(payback)?fmt(payback)+' বছর':'—'}</span></div>
+    <div class="res-row"><span>ROI</span><span>${fmt(roi)}%</span></div>
+    <div class="steps">Net = Revenue − Cost; Payback = Capex ÷ Annual Net; ROI = (Annual Net ÷ Capex) × 100</div>
+  `;
+  document.getElementById('bb-result').style.display = 'block';
+}
+
+function calcFeed(){
+  const biomass = val('vf-biomass'), rate = val('vf-rate'), interval = val('vf-interval');
+  let ok = true;
+  if(!(biomass>0)){ setErr('vf-biomass','কেঁচোর মোট ওজন দিন'); ok=false; } else setErr('vf-biomass','');
+  if(!(rate>0)){ setErr('vf-rate','Feed rate দিন'); ok=false; } else setErr('vf-rate','');
+  if(!(interval>0)){ setErr('vf-interval','দিন দিন'); ok=false; } else setErr('vf-interval','');
+  if(!ok) return;
+
+  const daily = biomass * rate/100;
+  const perFeed = daily * interval;
+  const next = new Date(); next.setDate(next.getDate()+interval);
+
+  document.getElementById('vf-result').innerHTML = `
+    <h4>Feed পরিকল্পনা <span class="res-badge">Estimated</span></h4>
+    <div class="res-row"><span>দৈনিক Feed</span><span>${fmt(daily)} kg</span></div>
+    <div class="res-row"><span>প্রতি Feeding-এ</span><span>${fmt(perFeed)} kg</span></div>
+    <div class="res-row"><span>পরবর্তী Feeding</span><span>${next.toLocaleDateString('bn-BD')}</span></div>
+    <div class="steps">Daily Feed = Biomass × Rate%; Per Feed = Daily × Interval</div>
+    <div class="callout" style="margin-top:12px;font-size:12.5px">এটি প্রাথমিক নির্দেশনা; কেঁচোর অবস্থা ও বেড দেখে সমন্বয় করুন।</div>
+  `;
+  document.getElementById('vf-result').style.display = 'block';
+}
+
+function calcWormPop(){
+  const area = val('wp-area'), perSqft = val('wp-per');
+  let ok = true;
+  if(!(area>0)){ setErr('wp-area','এলাকা দিন'); ok=false; } else setErr('wp-area','');
+  if(!(perSqft>0)){ setErr('wp-per','কেঁচো/বর্গফুট দিন'); ok=false; } else setErr('wp-per','');
+  if(!ok) return;
+  const total = area * perSqft;
+  const biomass = total * 0.6; // g per worm approximate
+  document.getElementById('wp-result').innerHTML = `
+    <h4>জনসংখ্যা অনুমান <span class="res-badge">Estimated</span></h4>
+    <div class="res-row"><span>মোট কেঁচো</span><span>≈ ${fmt(total,0)}</span></div>
+    <div class="res-row"><span>আনুমানিক ওজন</span><span>≈ ${fmt(biomass/1000,2)} kg</span></div>
+    <div class="steps">Population = Area × Per sqft; Biomass ≈ Population × ০.৬ গ্রাম</div>
+  `;
+  document.getElementById('wp-result').style.display = 'block';
+}
+
+function calcBed(){
+  const L = val('bd-l'), W = val('bd-w'), D = val('bd-d'), density = val('bd-density');
+  let ok = true;
+  if(!(L>0)){ setErr('bd-l','দৈর্ঘ্য দিন'); ok=false; } else setErr('bd-l','');
+  if(!(W>0)){ setErr('bd-w','প্রস্থ দিন'); ok=false; } else setErr('bd-w','');
+  if(!(D>0)){ setErr('bd-d','গভীরতা দিন'); ok=false; } else setErr('bd-d','');
+  if(!ok) return;
+  const vol = L * W * D;
+  const worms = (density || 200) * L * W;
+  document.getElementById('bd-result').innerHTML = `
+    <h4>বেড ডিজাইন <span class="res-badge">Estimated</span></h4>
+    <div class="res-row"><span>আয়তন</span><span>${fmt(vol)} ঘনফুট</span></div>
+    <div class="res-row"><span>পৃষ্ঠতল</span><span>${fmt(L*W)} বর্গফুট</span></div>
+    <div class="res-row"><span>প্রস্তাবিত কেঁচো</span><span>≈ ${fmt(worms,0)}</span></div>
+    <div class="steps">Volume = L × W × D; Worm Count = Density × Area</div>
+  `;
+  document.getElementById('bd-result').style.display = 'block';
+}
+
+function calcIntegrated(){
+  const bCapex = val('if-bcapex')||0, vCapex = val('if-vcapex')||0;
+  const monthlyCost = val('if-cost')||0;
+  const revGas = val('if-revgas')||0, revVermi = val('if-revvermi')||0, revWorm = val('if-revworm')||0;
+  let ok = true;
+  if(bCapex<0 || vCapex<0){ ok=false; }
+  if(!ok) return;
+  const totalCapex = bCapex + vCapex;
+  const monthlyRev = revGas + revVermi + revWorm;
+  const monthlyNet = monthlyRev - monthlyCost;
+  const annualNet = monthlyNet * 12;
+  const payback = (monthlyNet > 0 && totalCapex > 0) ? totalCapex / annualNet : Infinity;
+  const roi = totalCapex > 0 ? (annualNet/totalCapex)*100 : 0;
+
+  document.getElementById('if-result').innerHTML = `
+    <h4>সমন্বিত হিসাব <span class="res-badge">Estimated</span></h4>
+    <div class="res-row"><span>মোট বিনিয়োগ</span><span>৳ ${fmt(totalCapex)}</span></div>
+    <div class="res-row"><span>মাসিক আয়</span><span>৳ ${fmt(monthlyRev)}</span></div>
+    <div class="res-row"><span>মাসিক খরচ</span><span>৳ ${fmt(monthlyCost)}</span></div>
+    <div class="res-row"><span>মাসিক নিট</span><span>৳ ${fmt(monthlyNet)}</span></div>
+    <div class="res-row"><span>Payback</span><span>${isFinite(payback)?fmt(payback)+' বছর':'—'}</span></div>
+    <div class="res-row"><span>ROI</span><span>${fmt(roi)}%</span></div>
+    <div class="callout" style="margin-top:12px;font-size:12.5px">Internal transfer ও external purchase আলাদা রাখুন — একই খরচ দুইবার যোগ করবেন না।</div>
+  `;
+  document.getElementById('if-result').style.display = 'block';
+}
+
+/* ---------- Calculator tabs ---------- */
+function initCalcTabs(){
+  const tabs = $$('.tab[data-calc]');
+  const panels = $$('.calc-panel');
+  if(!tabs.length) return;
+  tabs.forEach(t=>{
+    t.addEventListener('click', ()=>{
+      tabs.forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const key = t.getAttribute('data-calc');
+      panels.forEach(p=>p.style.display = p.getAttribute('data-panel')===key ? 'block':'none');
+    });
+  });
+}
+
+/* ---------- Dashboard ---------- */
+function initDashboard(){
+  if(!document.getElementById('dash')) return;
+
+  const demo = LS.get('demoData', {
+    biogasDaily: 4.2, biogasTotal: 380, dungInput: 120, digestate: 95,
+    activeBeds: 6, wormPop: 18500, dailyFeed: 18, vermiEst: 60, totalStock: 240,
+    monthlyRevenue: 22000, monthlyExpense: 8500, profit: 13500
+  });
+  LS.set('demoData', demo);
+
+  const cards = [
+    {label:'মোট বায়োগ্যাস উৎপাদন', value: demo.biogasTotal+' m³', sub:'সর্বকালীন (ডেমো)', icon:'🔥', cls:''},
+    {label:'দৈনিক গ্যাস উৎপাদন', value: demo.biogasDaily+' m³', sub:'গত ২৪ ঘণ্টা', icon:'⚡', cls:'info'},
+    {label:'দৈনিক গোবর ইনপুট', value: demo.dungInput+' kg', sub:'আজ', icon:'🐄', cls:'earth'},
+    {label:'Digestate আউটপুট', value: demo.digestate+' kg', sub:'আজ', icon:'💧', cls:'info'},
+    {label:'সক্রিয় বেড', value: demo.activeBeds, sub:'Production + Breeding', icon:'🛏️', cls:''},
+    {label:'কেঁচোর সংখ্যা', value: demo.wormPop.toLocaleString('bn-BD'), sub:'আনুমানিক', icon:'🪱', cls:'earth'},
+    {label:'দৈনিক Feed', value: demo.dailyFeed+' kg', sub:'আজ', icon:'🍽️', cls:''},
+    {label:'আনুমানিক ভার্মিকম্পোস্ট', value: demo.vermiEst+' kg', sub:'চলতি মাস', icon:'🌱', cls:'info'},
+    {label:'মোট Stock', value: demo.totalStock+' kg', sub:'ভার্মিকম্পোস্ট', icon:'📦', cls:''},
+    {label:'মাসিক আয়', value:'৳ '+demo.monthlyRevenue.toLocaleString('bn-BD'), sub:'ডেমো', icon:'💰', cls:''},
+    {label:'মাসিক খরচ', value:'৳ '+demo.monthlyExpense.toLocaleString('bn-BD'), sub:'ডেমো', icon:'📉', cls:'warn'},
+    {label:'আনুমানিক মুনাফা', value:'৳ '+demo.profit.toLocaleString('bn-BD'), sub:'ডেমো', icon:'📈', cls:''}
+  ];
+
+  document.getElementById('dash-cards').innerHTML = cards.map(c=>`
+    <div class="stat ${c.cls}">
+      <span class="s-tag demo">Demo</span>
+      <div class="s-top"><div class="s-ico">${c.icon}</div></div>
+      <div class="s-label">${c.label}</div>
+      <div class="s-value">${c.value}</div>
+      <div class="s-sub">${c.sub}</div>
+    </div>`).join('');
+
+  // Charts
+  const ctx1 = document.getElementById('chartGas');
+  const ctx2 = document.getElementById('chartVermi');
+  if(ctx1 && window.Chart){
+    new Chart(ctx1, {
+      type:'line',
+      data:{
+        labels:['সপ্তাহ ১','সপ্তাহ ২','সপ্তাহ ৩','সপ্তাহ ৪','সপ্তাহ ৫','সপ্তাহ ৬'],
+        datasets:[{label:'গ্যাস (m³)', data:[24,28,26,31,34,36], borderColor:'#40916c', backgroundColor:'rgba(64,145,108,.15)', fill:true, tension:.4}]
+      },
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
+    });
+  }
+  if(ctx2 && window.Chart){
+    new Chart(ctx2, {
+      type:'bar',
+      data:{
+        labels:['বেড A','বেড B','বেড C','বেড D','বেড E','বেড F'],
+        datasets:[{label:'ভার্মিকম্পোস্ট (kg)', data:[35,42,38,50,45,40], backgroundColor:['#40916c','#52b788','#74c69d','#95d5b2','#2d6a4f','#1b4332'], borderRadius:6}]
+      },
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}
+    });
+  }
+
+  // Tasks
+  const tasks = LS.get('tasks', [
+    {t:'গোবর সংগ্রহ ও ডাইজেস্টারে দেওয়া', p:'high', done:false},
+    {t:'Bed A-তে feed দেওয়া', p:'med', done:false},
+    {t:'Gas pressure পরীক্ষা', p:'high', done:false},
+    {t:'Condensate trap খালি করা', p:'low', done:false},
+    {t:'ভার্মিকম্পোস্ট Batch 3 প্যাকেজিং', p:'med', done:false}
+  ]);
+  const taskBox = document.getElementById('dash-tasks');
+  if(taskBox){
+    taskBox.innerHTML = tasks.map((t,i)=>`
+      <label class="task ${t.done?'done':''}">
+        <input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${i})">
+        <span>${t.t}</span>
+        <span class="badge badge-${t.p}">${t.p==='high'?'উচ্চ':t.p==='med'?'মাঝারি':'নিম্ন'}</span>
+      </label>`).join('');
+  }
+
+  // Alerts
+  document.getElementById('dash-alerts').innerHTML = `
+    <div class="callout warn"><b>⚠️ Digestate পরীক্ষা</b>নতুন digestate ব্যাচের pH, EC ও অ্যামোনিয়া পরীক্ষা করুন — কেঁচোর বেডে দেওয়ার আগে।</div>
+    <div class="callout"><b>🔧 প্ল্যান্ট মেইনটেন্যান্স</b>H₂S ফিল্টার ২ সপ্তাহ পর পরিবর্তনের সময়।</div>
+    <div class="callout ok"><b>✅ ভালো অবস্থা</b>Bed A ও B-তে কেঁচোর সংখ্যা গত সপ্তাহের তুলনায় বেড়েছে।</div>`;
+}
+function toggleTask(i){
+  const tasks = LS.get('tasks', []);
+  if(tasks[i]){ tasks[i].done = !tasks[i].done; LS.set('tasks', tasks); initDashboard(); }
+}
+
+/* ---------- Glossary ---------- */
+function renderGlossary(filter=''){
+  const box = document.getElementById('gloss-list');
+  if(!box) return;
+  const q = filter.toLowerCase();
+  const list = GLOSSARY.filter(g => !q || g.en.toLowerCase().includes(q) || g.bn.includes(q));
+  if(!list.length){ box.innerHTML = '<div class="empty"><div class="em">🔍</div><p>কোনো শব্দ পাওয়া যায়নি</p></div>'; return; }
+  box.innerHTML = list.map(g=>`
+    <div class="gloss-item">
+      <b>${g.en}</b>
+      <div class="bn">${g.bn}</div>
+      <p>${g.d}</p>
+    </div>`).join('');
+}
+
+/* ---------- References ---------- */
+function renderReferences(){
+  const box = document.getElementById('refs-list');
+  if(!box) return;
+  box.innerHTML = REFERENCES.map(r=>`
+    <div class="gloss-item">
+      <b>${r.org}</b>
+      <div class="bn">${r.title}</div>
+      <p>${r.link !== '—' ? `<a href="${r.link}" target="_blank" rel="noopener">${r.link}</a>` : 'লাইব্রেরি/বই রেফারেন্স'}</p>
+    </div>`).join('');
+}
+
+/* ---------- CSV Import/Export ---------- */
+function exportCSV(){
+  const rows = [['Key','Value']];
+  for(let i=0;i<localStorage.length;i++){
+    const k = localStorage.key(i);
+    rows.push([k, localStorage.getItem(k)]);
+  }
+  const csv = rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'biovermi-backup-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(url);
+  toast('📥 ব্যাকআপ ডাউনলোড হয়েছে');
+}
+function importCSV(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const lines = ev.target.result.split('\n').slice(1);
+    let count = 0;
+    lines.forEach(line => {
+      const m = line.match(/"([^"]*)","([^"]*)"/);
+      if(m && m[1]){ try{ localStorage.setItem(m[1], m[2]); count++; }catch(err){} }
+    });
+    toast(`📤 ${count}টি এন্ট্রি রিস্টোর হয়েছে`,'ok');
+    setTimeout(()=>location.reload(),800);
+  };
+  reader.readAsText(file);
+}
+
+/* ---------- Page bootstrap ---------- */
+document.addEventListener('DOMContentLoaded', ()=>{
+  initTheme();
+  buildSidebar();
+  initSearch();
+
+  // Theme buttons
+  $$('[data-theme-toggle]').forEach(b=>b.addEventListener('click', toggleTheme));
+  $$('[data-sidebar-toggle]').forEach(b=>b.addEventListener('click', toggleSidebar));
+
+  // Nav active
+  const path = location.pathname.split('/').pop() || 'index.html';
+  $$('.nav-item').forEach(a=>{
+    if(a.getAttribute('href')===path && !a.getAttribute('data-mid')) a.classList.add('active');
+  });
+
+  const page = document.body.getAttribute('data-page');
+  const params = new URLSearchParams(location.search);
+  const mid = params.get('module');
+
+  if(page==='biogas' || page==='vermicompost' || page==='integrated'){
+    const main = document.getElementById('page-content');
+    if(mid && main){
+      renderModule(mid, main);
+    } else if(main){
+      const part = page==='biogas'?'biogas':page==='vermicompost'?'vermicompost':'integrated';
+      const titles = {biogas:'🔥 বায়োগ্যাস উৎপাদন মডিউল', vermicompost:'🪱 ভার্মিকম্পোস্ট মডিউল', integrated:'🔄 সমন্বিত খামার মডিউল'};
+      main.innerHTML = `
+        <div class="page-head">
+          <div class="crumb"><a href="index.html">হোম</a> › ${partLabel(part)}</div>
+          <h1>${titles[part]}</h1>
+          <p>প্রতিটি মডিউলে ক্লিক করে বিস্তারিত পাঠ শুরু করুন। পাঠ সম্পন্ন করলে প্রগ্রেস ট্র্যাক হবে।</p>
+        </div>
+        <div id="mod-list"></div>`;
+      renderModuleList(part, document.getElementById('mod-list'));
+    }
+  }
+
+  if(page==='dashboard') initDashboard();
+  if(page==='glossary'){
+    renderGlossary();
+    document.getElementById('gloss-search')?.addEventListener('input', e=>renderGlossary(e.target.value));
+  }
+  if(page==='references') renderReferences();
+  if(page==='calculators') initCalcTabs();
+  if(page==='home'){
+    const box = document.getElementById('featured-mods');
+    if(box){
+      const featured = MODULES.filter(m=>[1,3,12,17,26,40].includes(m.num));
+      box.innerHTML = featured.map(m=>`
+        <div class="mod-card" onclick="location.href='${pageForPart(m.part)}?module=${m.id}'">
+          <div class="num">${m.num}</div>
+          <h4>${m.title}</h4>
+          <p>${m.summary}</p>
+          <div class="meta"><span>📖 ${m.read} মিনিট</span></div>
+        </div>`).join('');
+    }
+  }
+  updateProgressUI();
+});
