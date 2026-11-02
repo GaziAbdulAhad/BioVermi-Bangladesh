@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>শব্দকোষ — BioVermi Bangladesh</title>
+  <meta name="description" content="বায়োগ্যাস ও ভার্মিকম্পোস্টের গুরুত্বপূর্ণ টেকনিক্যাল টার্মের বাংলা-ইংরেজি শব্দকোষ ও ব্যাখ্যা।">
+  
+  <!-- ফন্ট -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- মেইন CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="glossary"> <!-- script.js এই পেজে শব্দকোষ লোড করবে -->
+
+<div class="app">
+  
+  <!-- ================= সাইডবার ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">🌿</div>
+      <div class="brand-text">
+        <b>BioVermi BD</b>
+        <span>কৃষি প্রযুক্তি প্ল্যাটফর্ম</span>
+      </div>
+    </div>
+    <div class="sidebar-scroll" id="sidebar-nav">
+      <!-- JS Placeholder -->
+    </div>
+  </aside>
+
+  <!-- ================= মূল কন্টেন্ট ================= -->
+  <div class="main">
+    
+    <!-- টপবার -->
+    <header class="topbar">
+      <button class="icon-btn hamburger" onclick="toggleSidebar()" aria-label="মেনু">☰</button>
+      
+      <div class="search-wrap">
+        <span class="s-ico">🔍</span>
+        <input type="text" id="globalSearch" placeholder="মডিউল বা বিষয় খুঁজুন..." autocomplete="off">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn" onclick="toggleTheme()" title="ডার্ক/লাইট মোড" aria-label="থিম পরিবর্তন">🌓</button>
+        <div class="avatar" title="ব্যবহারকারী">বাং</div>
+      </div>
+    </header>
+
+    <!-- শব্দকোষ এরিয়া -->
+    <main class="content">
+      
+      <div class="page-head" style="margin-bottom: 24px;">
+        <h1>📖 শব্দকোষ (Glossary)</h1>
+        <p style="color: var(--text-2);">বায়োগ্যাস ও ভার্মিকম্পোস্টের টেকনিক্যাল টার্মগুলোর সহজ বাংলা ব্যাখ্যা।</p>
+      </div>
+
+      <!-- শব্দকোষের ভেতরে সার্চ করার ইনপুট -->
+      <div class="field" style="max-width: 500px; margin-bottom: 24px;">
+        <input type="text" id="gloss-search" class="input" placeholder="শব্দ খুঁজুন (যেমন: Digester, কোকুন)..." autocomplete="off">
+      </div>
+
+      <!-- শব্দকোষের তালিকা (script.js এটি পূরণ করবে) -->
+      <div class="card" id="gloss-list" style="overflow: hidden;">
+        <!-- JS থেকে ডাইনামিক শব্দকোষ আসবে -->
+        <div style="padding: 30px; text-align: center; color: var(--muted);">লোড হচ্ছে...</div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- গ্লোবাল জাভাস্ক্রিপ্ট ফাইল সমূহ -->
+<script src="data.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
