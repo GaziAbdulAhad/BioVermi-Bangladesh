@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ফার্ম ডেটা — BioVermi Bangladesh</title>
+  <meta name="description" content="দৈনিক গ্যাস, বেড লগ, উৎপাদন, বিক্রি ও খরচের ডেটা এন্ট্রি — Google Sheet-এ সংরক্ষণসহ।">
+  
+  <!-- ফন্ট -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- মেইন CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="farmdata"> <!-- script.js এই পেজে শব্দকোষ লোড করবে -->
+
+<div class="app">
+  
+  <!-- ================= সাইডবার ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">🌿</div>
+      <div class="brand-text">
+        <b>BioVermi BD</b>
+        <span>কৃষি প্রযুক্তি প্ল্যাটফর্ম</span>
+      </div>
+    </div>
+    <div class="sidebar-scroll" id="sidebar-nav">
+      <!-- JS Placeholder -->
+    </div>
+  </aside>
+
+  <!-- ================= মূল কন্টেন্ট ================= -->
+  <div class="main">
+    
+    <!-- টপবার -->
+    <header class="topbar">
+      <button class="icon-btn hamburger" onclick="toggleSidebar()" aria-label="মেনু">☰</button>
+      
+      <div class="search-wrap">
+        <span class="s-ico">🔍</span>
+        <input type="text" id="globalSearch" placeholder="মডিউল বা বিষয় খুঁজুন..." autocomplete="off">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn" onclick="toggleTheme()" title="ডার্ক/লাইট মোড" aria-label="থিম পরিবর্তন">🌓</button>
+        <div class="avatar" title="ব্যবহারকারী">বাং</div>
+      </div>
+    </header>
+
+    <!-- শব্দকোষ এরিয়া -->
+    <main class="content">
+      <div class="page-head" style="margin-bottom: 24px;">
+        <h1>🗂️ ফার্ম ডেটা</h1>
+        <p style="color: var(--text-2);">দৈনিক লগ লিখুন; ডেটা এই ব্রাউজারে সংরক্ষিত হয় এবং আপনার Google Sheet-এ জমা করা যায়।</p>
+      </div>
+      <div id="farm-root"></div>
+    </main>
+  </div>
+</div>
+
+<!-- JS -->
+<script src="data.js"></script>
+<script src="content-extra.js"></script>
+<script src="script.js"></script>
+<script src="farm.js"></script>
+
+</body>
+</html>

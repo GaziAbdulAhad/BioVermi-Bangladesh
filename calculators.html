@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ক্যালকুলেটর — BioVermi Bangladesh</title>
+  <meta name="description" content="বায়োগ্যাস এবং ভার্মিকম্পোস্ট খামারের প্রয়োজনীয় সব হিসাব—স্লারি, প্ল্যান্ট সাইজিং, লাভ-ক্ষতি ও ROI বের করার ইন্টারঅ্যাক্টিভ ক্যালকুলেটর।">
+  
+  <!-- ফন্ট -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- মেইন CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="calculators">
+
+<div class="app">
+  
+  <!-- ================= সাইডবার ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">🌿</div>
+      <div class="brand-text">
+        <b>BioVermi BD</b>
+        <span>কৃষি প্রযুক্তি প্ল্যাটফর্ম</span>
+      </div>
+    </div>
+    <div class="sidebar-scroll" id="sidebar-nav">
+      <!-- JS Placeholder -->
+    </div>
+  </aside>
+
+  <!-- ================= মূল কন্টেন্ট ================= -->
+  <div class="main">
+    
+    <!-- টপবার -->
+    <header class="topbar">
+      <button class="icon-btn hamburger" onclick="toggleSidebar()" aria-label="মেনু">☰</button>
+      
+      <div class="search-wrap">
+        <span class="s-ico">🔍</span>
+        <input type="text" id="globalSearch" placeholder="মডিউল বা বিষয় খুঁজুন..." autocomplete="off">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn" onclick="toggleTheme()" title="ডার্ক/লাইট মোড" aria-label="থিম পরিবর্তন">🌓</button>
+        <div class="avatar" title="ব্যবহারকারী">বাং</div>
+      </div>
+    </header>
+
+    <!-- ক্যালকুলেটর এরিয়া -->
+    <main class="content">
+
+      <div class="page-head" style="margin-bottom:24px;">
+        <h1>🧮 ফার্ম ক্যালকুলেটর</h1>
+        <p style="color:var(--text-2);">প্রয়োজনীয় তথ্য দিন এবং আপনার খামারের হিসাব বের করুন। সব ফলাফল আনুমানিক (Estimated)।</p>
+      </div>
+
+      <div class="tabs" style="margin-bottom:24px;flex-wrap:wrap;">
+        <button class="tab active" data-calc="slurry">🐄 স্লারি</button>
+        <button class="tab" data-calc="sizing">📐 প্ল্যান্ট সাইজিং</button>
+        <button class="tab" data-calc="business">💰 বায়োগ্যাস ব্যবসা</button>
+        <button class="tab" data-calc="feed">🍃 কেঁচোর খাবার</button>
+        <button class="tab" data-calc="worm">🪱 কেঁচো সংখ্যা</button>
+        <button class="tab" data-calc="bed">🛏️ বেড ডিজাইন</button>
+        <button class="tab" data-calc="integrated">🔄 সমন্বিত ROI</button>
+      </div>
+
+      <div class="calc-panel" data-panel="slurry" style="display:block">
+        <div class="card card-pad">
+          <h3>🐄 গোবর থেকে স্লারি প্রস্তুতি</h3>
+          <p style="font-size:13.5px;color:var(--text-2);margin-bottom:16px;">গোবরের পরিমাণ, আর্দ্রতা ও লক্ষ্য Total Solids (TS) দিয়ে প্রয়োজনীয় পানি ও মোট স্লারি বের করুন।</p>
+          <div class="calc-grid">
+            <div class="field">
+              <label>দৈনিক গোবর (kg)</label>
+              <input type="number" id="sd-dung" class="input" value="100" min="1">
+              <small class="field-err" id="sd-dungErr"></small>
+            </div>
+            <div class="field">
+              <label>গোবরের আর্দ্রতা (%)</label>
+              <input type="number" id="sd-mc" class="input" value="80" min="0" max="99">
+              <small class="field-err" id="sd-mcErr"></small>
+            </div>
+            <div class="field">
+              <label>লক্ষ্য Total Solids (%)</label>
+              <input type="number" id="sd-ts" class="input" value="10" min="1" max="99">
+              <small class="field-err" id="sd-tsErr"></small>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:10px;">
+            <button class="btn btn-primary" onclick="calcSlurry()">হিসাব করুন</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('sd-result').style.display='none'">রিসেট</button>
+          </div>
+          <div id="sd-result" class="calc-result"></div>
+        </div>
+      </div>
+
+      <div class="calc-panel" data-panel="sizing" style="display:none">
+        <div class="card card-pad">
+          <h3>📐 বায়োগ্যাস প্ল্যান্ট সাইজিং</h3>
+          <p style="font-size:13.5px;color:var(--text-2);margin-bottom:16px;">স্লারি, HRT ও গ্যাস উৎপাদন হার দিয়ে ডাইজেস্টার ও গ্যাস হোল্ডারের আয়তন বের করুন।</p>
+          <div class="calc-grid">
+            <div class="field">
+              <label>দৈনিক স্লারি (m³)</label>
+              <input type="number" id="bs-slurry" class="input" value="1.2" step="0.1" min="0.1">
+              <small class="field-err" id="bs-slurryErr"></small>
+            </div>
+            <div class="field">
+              <label>HRT (দিন)</label>
+              <input type="number" id="bs-hrt" class="input" value="30" min="10">
+              <small class="field-err" id="bs-hrtErr"></small>
+            </div>
+            <div class="field">
+              <label>গ্যাস উৎপাদন (m³/m³ slurry)</label>
+              <input type="number" id="bs-yield" class="input" value="0.9" step="0.1" min="0.1">
+              <small class="field-err" id="bs-yieldErr"></small>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:10px;">
+            <button class="btn btn-primary" onclick="calcSizing()">হিসাব করুন</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('bs-result').style.display='none'">রিসেট</button>
+          </div>
+          <div id="bs-result" class="calc-result"></div>
+        </div>
+      </div>
+
+      <div class="calc-panel" data-panel="business" style="display:none">
+        <div class="card card-pad">
+          <h3>💰 বায়োগ্যাস ব্যবসার হিসাব</h3>
+          <p style="font-size:13.5px;color:var(--text-2);margin-bottom:16px;">বিনিয়োগ, মাসিক খরচ এবং গ্যাস বিক্রি থেকে নিট মুনাফা, ROI ও Payback বের করুন।</p>
+          <div class="calc-grid">
+            <div class="field">
+              <label>মোট বিনিয়োগ (৳)</label>
+              <input type="number" id="bb-capex" class="input" value="120000" min="0">
+              <small class="field-err" id="bb-capexErr"></small>
+            </div>
+            <div class="field">
+              <label>মাসিক খরচ (৳)</label>
+              <input type="number" id="bb-cost" class="input" value="5000" min="0">
+              <small class="field-err" id="bb-costErr"></small>
+            </div>
+            <div class="field">
+              <label>মাসিক গ্যাস ব্যবহার/বিক্রি (m³)</label>
+              <input type="number" id="bb-gas" class="input" value="300" min="0">
+              <small class="field-err" id="bb-gasErr"></small>
+            </div>
+            <div class="field">
+              <label>প্রতি m³ মূল্য (৳)</label>
+              <input type="number" id="bb-price" class="input" value="50" min="0">
+              <small class="field-err" id="bb-priceErr"></small>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:10px;">
+            <button class="btn btn-primary" onclick="calcBusiness()">হিসাব করুন</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('bb-result').style.display='none'">রিসেট</button>
+          </div>
+          <div id="bb-result" class="calc-result"></div>
+        </div>
+      </div>
+
+      <div class="calc-panel" data-panel="feed" style="display:none">
+        <div class="card card-pad">
+          <h3>🍃 কেঁচোর খাবারের পরিকল্পনা</h3>
+          <p style="font-size:13.5px;color:var(--text-2);margin-bottom:16px;">কেঁচোর মোট ওজন ও Feed rate থেকে দৈনিক ও প্রতি-ফিডিং খাবারের পরিমাণ বের করুন।</p>
+          <div class="calc-grid">
+            <div class="field">
+              <label>কেঁচোর মোট ওজন (kg)</label>
+              <input type="number" id="vf-biomass" class="input" value="10" min="0.1" step="0.1">
+              <small class="field-err" id="vf-biomassErr"></small>
+            </div>
+            <div class="field">
+              <label>Feed rate (% / দিন)</label>
+              <input type="number" id="vf-rate" class="input" value="50" min="1">
+              <small class="field-err" id="vf-rateErr"></small>
+            </div>
+            <div class="field">
+              <label>Feeding ব্যবধান (দিন)</label>
+              <input type="number" id="vf-interval" class="input" value="3" min="1">
+              <small class="field-err" id="vf-intervalErr"></small>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:10px;">
+            <button class="btn btn-primary" onclick="calcFeed()">হিসাব করুন</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('vf-result').style.display='none'">রিসেট</button>
+          </div>
+          <div id="vf-result" class="calc-result"></div>
+        </div>
+      </div>
+
+      <div class="calc-panel" data-panel="worm" style="display:none">
+        <div class="card card-pad">
+          <h3>🪱 কেঁচোর সংখ্যা অনুমান</h3>
+          <p style="font-size:13.5px;color:var(--text-2);margin-bottom:16px;">বেডের এলাকা ও প্রতি বর্গফুটে কেঁচোর ঘনত্ব থেকে মোট কেঁচো ও ওজন অনুমান করুন।</p>
+          <div class="calc-grid">
+            <div class="field">
+              <label>বেডের এলাকা (বর্গফুট)</label>
+              <input type="number" id="wp-area" class="input" value="50" min="1">
+              <small class="field-err" id="wp-areaErr"></small>
+            </div>
+            <div class="field">
+              <label>কেঁচো / বর্গফুট</label>
+              <input type="number" id="wp-per" class="input" value="200" min="1">
+              <small class="field-err" id="wp-perErr"></small>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:10px;">
+            <button class="btn btn-primary" onclick="calcWormPop()">হিসাব করুন</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('wp-result').style.display='none'">রিসেট</button>
+          </div>
+          <div id="wp-result" class="calc-result"></div>
+        </div>
+      </div>
+
+      <div class="calc-panel" data-panel="bed" style="display:none">
+        <div class="card card-pad">
+          <h3>🛏️ ভার্মিবেড ডিজাইন</h3>
+          <p style="font-size:13.5px;color:var(--text-2);margin-bottom:16px;">দৈর্ঘ্য, প্রস্থ ও গভীরতা থেকে বেডের আয়তন ও প্রস্তাবিত কেঁচোর সংখ্যা বের করুন।</p>
+          <div class="calc-grid">
+            <div class="field">
+              <label>দৈর্ঘ্য (ফুট)</label>
+              <input type="number" id="bd-l" class="input" value="10" min="1">
+              <small class="field-err" id="bd-lErr"></small>
+            </div>
+            <div class="field">
+              <label>প্রস্থ (ফুট)</label>
+              <input type="number" id="bd-w" class="input" value="3" min="1">
+              <small class="field-err" id="bd-wErr"></small>
+            </div>
+            <div class="field">
+              <label>গভীরতা (ফুট)</label>
+              <input type="number" id="bd-d" class="input" value="1" min="0.1" step="0.1">
+              <small class="field-err" id="bd-dErr"></small>
+            </div>
+            <div class="field">
+              <label>কেঁচো / বর্গফুট</label>
+              <input type="number" id="bd-density" class="input" value="200" min="1">
+              <small class="field-err" id="bd-densityErr"></small>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:10px;">
+            <button class="btn btn-primary" onclick="calcBed()">হিসাব করুন</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('bd-result').style.display='none'">রিসেট</button>
+          </div>
+          <div id="bd-result" class="calc-result"></div>
+        </div>
+      </div>
+
+      <div class="calc-panel" data-panel="integrated" style="display:none">
+        <div class="card card-pad">
+          <h3>🔄 সমন্বিত খামারের ROI</h3>
+          <p style="font-size:13.5px;color:var(--text-2);margin-bottom:16px;">বায়োগ্যাস ও ভার্মিকম্পোস্ট একসাথে ধরে মোট বিনিয়োগ, আয়, নিট মুনাফা ও Payback বের করুন।</p>
+          <div class="calc-grid">
+            <div class="field">
+              <label>বায়োগ্যাস বিনিয়োগ (৳)</label>
+              <input type="number" id="if-bcapex" class="input" value="80000" min="0">
+              <small class="field-err" id="if-bcapexErr"></small>
+            </div>
+            <div class="field">
+              <label>ভার্মি বিনিয়োগ (৳)</label>
+              <input type="number" id="if-vcapex" class="input" value="40000" min="0">
+              <small class="field-err" id="if-vcapexErr"></small>
+            </div>
+            <div class="field">
+              <label>মাসিক মোট খরচ (৳)</label>
+              <input type="number" id="if-cost" class="input" value="5000" min="0">
+              <small class="field-err" id="if-costErr"></small>
+            </div>
+            <div class="field">
+              <label>মাসিক গ্যাস আয় (৳)</label>
+              <input type="number" id="if-revgas" class="input" value="6000" min="0">
+              <small class="field-err" id="if-revgasErr"></small>
+            </div>
+            <div class="field">
+              <label>মাসিক ভার্মিকম্পোস্ট আয় (৳)</label>
+              <input type="number" id="if-revvermi" class="input" value="7000" min="0">
+              <small class="field-err" id="if-revvermiErr"></small>
+            </div>
+            <div class="field">
+              <label>মাসিক কেঁচো বিক্রি আয় (৳)</label>
+              <input type="number" id="if-revworm" class="input" value="2000" min="0">
+              <small class="field-err" id="if-revwormErr"></small>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:10px;">
+            <button class="btn btn-primary" onclick="calcIntegrated()">হিসাব করুন</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('if-result').style.display='none'">রিসেট</button>
+          </div>
+          <div id="if-result" class="calc-result"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- JS -->
+<script src="data.js"></script>
+<script src="content-extra.js"></script>
+<script src="calc-extra.js"></script>
+<script src="script.js"></script>
+<script src="farm.js"></script>
+
+</body>
+</html>

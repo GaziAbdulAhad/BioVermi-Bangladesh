@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>বায়োগ্যাস মডিউল — BioVermi Bangladesh</title>
+  <meta name="description" content="বায়োগ্যাস উৎপাদন, প্ল্যান্ট ডিজাইন, কাঁচামাল প্রস্তুতি এবং Digestate ব্যবস্থাপনার সম্পূর্ণ বাংলা গাইড।">
+  
+  <!-- ফন্ট -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- মেইন CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="biogas"> <!-- data-page এট্রিবিউটটি script.js-কে জানাবে যে এটি বায়োগ্যাস পেজ -->
+
+<div class="app">
+  
+  <!-- ================= সাইডবার ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">🌿</div>
+      <div class="brand-text">
+        <b>BioVermi BD</b>
+        <span>কৃষি প্রযুক্তি প্ল্যাটফর্ম</span>
+      </div>
+    </div>
+    <!-- সাইডবারের মেনু script.js থেকে ডাইনামিকালি লোড হবে -->
+    <div class="sidebar-scroll" id="sidebar-nav">
+      <!-- JS Placeholder -->
+    </div>
+  </aside>
+
+  <!-- ================= মূল কন্টেন্ট ================= -->
+  <div class="main">
+    
+    <!-- টপবার -->
+    <header class="topbar">
+      <button class="icon-btn hamburger" onclick="toggleSidebar()" aria-label="মেনু">☰</button>
+      
+      <div class="search-wrap">
+        <span class="s-ico">🔍</span>
+        <input type="text" id="globalSearch" placeholder="মডিউল বা বিষয় খুঁজুন..." autocomplete="off">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn" onclick="toggleTheme()" title="ডার্ক/লাইট মোড" aria-label="থিম পরিবর্তন">🌓</button>
+        <div class="avatar" title="ব্যবহারকারী">বাং</div>
+      </div>
+    </header>
+
+    <!-- ডাইনামিক কন্টেন্ট এরিয়া -->
+    <main class="content" id="page-content">
+      <!-- 
+        এই ডিভের ভেতরে script.js ফাইলটি ডাইনামিকালি কন্টেন্ট লোড করবে। 
+        যদি URL-এ ?module=b1 থাকে, তবে মডিউল ১ এর বিস্তারিত আসবে। 
+        যদি শুধু biogas.html থাকে, তবে ১৬টি বায়োগ্যাস মডিউলের তালিকা আসবে। 
+      -->
+      <div style="text-align: center; padding: 50px; color: var(--muted);">
+        <p>লোড হচ্ছে...</p>
+      </div>
+    </main>
+    
+  </div>
+</div>
+
+<!-- গ্লোবাল জাভাস্ক্রিপ্ট ফাইল সমূহ -->
+<script src="data.js"></script>
+<script src="content-extra.js"></script>
+<script src="script.js"></script>
+<script src="farm.js"></script>
+
+</body>
+</html>
